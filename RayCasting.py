@@ -1,26 +1,27 @@
-from typing import Union
+from typing import Union, List, Tuple
 import pygame
 import random
 import sys
 
 
 class Source:
-    def __init__(self, WIN: pygame.surface.Surface, x: int, y: int, radius: int=5, max_distance: float=float("inf"), ray_generation: Union[list[int], tuple[int, int, int]]=(0, 360, 1)) -> None:
+    def __init__(self, WIN: pygame.surface.Surface, x: int, y: int, radius: int=5, max_distance: float=float("inf"), ray_generation: Union[List[int], Tuple[int, int, int]]=(0, 360, 1)) -> None:
         self.WIN: pygame.surface.Surface = WIN
         self.pos: pygame.math.Vector2 = pygame.math.Vector2(x, y)
         self.max_distance: float = max_distance
         self.radius: int = radius
-        self.rays: list[pygame.math.Vector2] = []
-        for a in range(*ray_generation):  # angle in degrees
-            self.rays.append(pygame.math.Vector2(1, 0).rotate(a).normalize())  # it contains the direction of the ray
+        self.rays: List[pygame.math.Vector2] = [pygame.math.Vector2(1, 0).rotate(a).normalize() for a in range(*ray_generation)]
 
-    def move(self, pos: Union[list[int], tuple[int, int], pygame.math.Vector2]) -> None:
+    def move(self, pos: Union[List[int], Tuple[int, int], pygame.math.Vector2]) -> None:
         self.pos.x = pos[0]
         self.pos.y = pos[1]
 
-    def cast(self, walls: Union[list[list[int]], tuple[tuple[int]], list[tuple[int]], tuple[list[int]]], color: Union[list[int], tuple[int, int, int]]=(255, 255, 255)) -> None:
+    def cast(self, walls: Union[List[List[int]], Tuple[Tuple[int]], List[Tuple[int]], Tuple[List[int]]], color: Union[List[int], Tuple[int, int, int]]=(255, 255, 255)) -> None:
         for ray in self.rays:
-            x3, y3, x4, y4 = self.pos.x, self.pos.y, self.pos.x + ray.x, self.pos.y + ray.y
+            x3 = self.pos.x
+            y3 = self.pos.y
+            x4 = self.pos.x + ray.x
+            y4 = self.pos.y + ray.y 
             record = float("inf")
             closest = None
             for wall in walls:
@@ -33,15 +34,14 @@ class Source:
                 u = -((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3)) / den
 
                 if 0 <= t <= 1 and 0 <= u:
-                    p = pygame.math.Vector2(x1 + t * (x2 - x1), y1 + t * (y2 - y1))
-                    dis = self.pos.distance_to(p)
+                    dis = self.pos.distance_to((x1 + t * (x2 - x1), y1 + t * (y2 - y1)))
                     if dis < record and dis <= self.max_distance:
                         record = dis
-                        closest = p
+                        closest = (x1 + t * (x2 - x1), y1 + t * (y2 - y1))
             if closest:
                 pygame.draw.line(self.WIN, color, self.pos, closest, 1)
 
-    def draw(self, color: Union[list[int], tuple[int, int, int]]=(255, 255, 255)) -> None:
+    def draw(self, color: Union[List[int], Tuple[int, int, int]]=(255, 255, 255)) -> None:
         pygame.draw.circle(self.WIN, color, self.pos, self.radius)
 
 
@@ -57,7 +57,7 @@ class Visualization:
         self.FPS: int = 60
 
         self.source: Union[Source, None] = None
-        self.walls: list[list[int]] = []
+        self.walls: List[List[int]] = []
 
         self.reset()
 
