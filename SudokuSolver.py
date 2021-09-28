@@ -39,37 +39,34 @@ class Visualization:
         self.show_sequence()
 
     def solve(self) -> bool:
-        find = self.find_empty()
-        if not find:
-            return True
-        else:
-            col, row = find
+        try:
+            for i in range(len(self.board)):
+                for j in range(len(self.board[0])):
+                    if self.board[i][j] == 0:
+                        col, row = j, i
+                        raise StopIteration
+        except StopIteration: pass
+        else: return True
 
         for i in range(1, 10):
-            if self.valid_spot(i, (row, col)):
-                self.board[row][col] = i
-                self.sequence.append([[v for v in row] for row in self.board])
+            if not self.valid_spot(i, (row, col)):
+                continue
+            self.board[row][col] = i
+            self.sequence.append([[v for v in row] for row in self.board])
 
-                if self.solve():
-                    return True
+            if self.solve():
+                return True
 
-                self.board[row][col] = 0
+            self.board[row][col] = 0
         return False
 
     def valid_spot(self, move: int, pos: Tuple[int, int]) -> bool:
         bx, by = pos[1] // 3, pos[0] // 3
-        if any([(self.board[pos[0]][i] == move and pos[1] != i) for i in range(len(self.board[0]))]) or \
-                any([(self.board[i][pos[1]] == move and pos[0] != i) for i in range(len(self.board))]) or \
-                any([(self.board[i][j] == move and (i, j) != pos) for j in range(bx * 3, bx * 3 + 3) for i in range(by * 3, by * 3 + 3)]):
-            return False
-        return True
-
-    def find_empty(self) -> Optional[Tuple[int, int]]:
-        for i in range(len(self.board)):
-            for j in range(len(self.board[0])):
-                if self.board[i][j] == 0:
-                    return j, i
-        return None
+        return not (
+            any([(self.board[pos[0]][i] == move and pos[1] != i) for i in range(len(self.board[0]))]) or
+            any([(self.board[i][pos[1]] == move and pos[0] != i) for i in range(len(self.board))]) or
+            any([(self.board[i][j] == move and (i, j) != pos) for j in range(bx * 3, bx * 3 + 3) for i in range(by * 3, by * 3 + 3)])
+        )
 
     def draw_board(self) -> None:
         self.WIN.fill((30, 30, 30))
