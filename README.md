@@ -12,5 +12,6 @@
 ##### The `MazeSolver` takes in a `maze.json` file in the same directory as the `MazeSolver.py` file 
 
 # Other
-> Hilbert curve  
+> Hilbert Curve  
 > Toothpick Sequence  
+> Sudoku Solver
