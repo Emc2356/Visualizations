@@ -18,4 +18,4 @@
 
 # Other
 > Sudoku Solver
-> 
+> Fourier Series
