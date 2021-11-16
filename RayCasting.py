@@ -1,16 +1,16 @@
-from typing import Union, List, Tuple
+from typing import Union, List, Tuple, Iterable
 import pygame
 import random
 import sys
 
 
 class Source:
-    def __init__(self, WIN: pygame.surface.Surface, x: int, y: int, radius: int=5, max_distance: float=float("inf"), ray_generation: Union[List[int], Tuple[int, int, int]]=(0, 360, 1)) -> None:
+    def __init__(self, WIN: pygame.surface.Surface, x: int, y: int, radius: int=5, max_distance: float=float("inf"), ray_generation: Iterable=range(0, 360, 1)) -> None:
         self.WIN: pygame.surface.Surface = WIN
         self.pos: pygame.math.Vector2 = pygame.math.Vector2(x, y)
         self.max_distance: float = max_distance
         self.radius: int = radius
-        self.rays: List[pygame.math.Vector2] = [pygame.math.Vector2(1, 0).rotate(a).normalize() for a in range(*ray_generation)]
+        self.rays: List[pygame.math.Vector2] = [pygame.math.Vector2(1, 0).rotate(a).normalize() for a in ray_generation]
 
     def move(self, pos: Union[List[int], Tuple[int, int], pygame.math.Vector2]) -> None:
         self.pos.x = pos[0]
@@ -20,12 +20,11 @@ class Source:
         for ray in self.rays:
             x3 = self.pos.x
             y3 = self.pos.y
-            x4 = self.pos.x + ray.x
-            y4 = self.pos.y + ray.y 
+            x4 = x3 + ray.x
+            y4 = y3 + ray.y
             record = float("inf")
             closest = None
-            for wall in walls:
-                x1, y1, x2, y2 = wall
+            for x1, y1, x2, y2 in walls:
                 den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
                 if den == 0:  # line are parallel and they will never meet even if you stretch them out infinitely
                     continue
@@ -41,7 +40,7 @@ class Source:
             if closest:
                 pygame.draw.line(self.WIN, color, self.pos, closest, 1)
 
-    def draw(self, color: Union[List[int], Tuple[int, int, int]]=(255, 255, 255)) -> None:
+    def draw(self, color: Union[pygame.color.Color, str, Tuple[int, int, int], List[int], int, Tuple[int, int, int, int]]=(255, 255, 255)) -> None:
         pygame.draw.circle(self.WIN, color, self.pos, self.radius)
 
 

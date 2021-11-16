@@ -55,34 +55,28 @@ class Visualization:
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.FPS: int = 60
 
-        self.length: int = 15
-        self.iterations: int = 1
+        self.length: int = 10
         self.toothpicks: List[ToothPick] = [
             ToothPick(pygame.math.Vector2(self.W//2, self.H//2), 1, self.length)
         ]
 
-        self.discarded: List[ToothPick] = []
-
         pygame.display.set_caption("Toothpick Sequence")
 
     def update(self) -> None:
-        for _ in range(self.iterations):
-            all_picks = self.toothpicks + self.discarded
-            for i, tp in sorted(enumerate(self.toothpicks), reverse=True):
-                if not tp.new or not tp:
-                    tp.self.useful = False
-                    continue
-                tp.new = False
-                a, b = tp.create_picks(all_picks)
-                if a:
-                    self.toothpicks.append(a)
-                    a.draw(self.WIN)
-                if b:
-                    self.toothpicks.append(b)
-                    b.draw(self.WIN)
-                self.toothpicks.pop(i)
-                self.discarded.append(tp)
-            self.discarded = list(filter(lambda tp: tp.useful, self.toothpicks))
+        toothpicks = self.toothpicks[:]
+        for i, tp in sorted(enumerate(self.toothpicks), reverse=True):
+            if not tp.new or not tp:
+                tp.self.useful = False
+                continue
+            tp.new = False
+            a, b = tp.create_picks(toothpicks)
+            if a:
+                self.toothpicks.append(a)
+                a.draw(self.WIN)
+            if b:
+                self.toothpicks.append(b)
+                b.draw(self.WIN)
+            self.toothpicks.pop(i)
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
