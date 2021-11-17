@@ -10,6 +10,7 @@
 > Hilbert Curve  
 > Toothpick Sequence  
 > Infinite Square Fractal
+> Lorenz System
 
 # Mazes
 
