@@ -1,8 +1,8 @@
-from typing import List
+from typing import List, Tuple
 import OpenGL.GLU as GLU
 import OpenGL.GL as GL
+import itertools
 import colorsys
-import OpenGL
 import pygame
 import math
 import sys
@@ -31,7 +31,8 @@ class Game:
 
         self.dt: float = 0.01
 
-        self.points: List[List[float]] = []
+        self.vertices: List[List[float]] = [[0, 0, 0]]
+        self.color_data: List[Tuple[float]] = [colorsys.hsv_to_rgb(1/255, 1, 1)]
 
         self.rotations: List[int] = [1, 1, 1, 1]
 
@@ -41,7 +42,6 @@ class Game:
         GL.glTranslate(-50/self.W, -50/self.H, 0)  # this is what i call pulling numbers from your ass
 
     def update(self) -> None:
-
         dx = (self.a * (self.y - self.x)) * self.dt
         dy = (self.x * (self.b - self.z) - self.y) * self.dt
         dz = (self.x * self.y - self.c * self.z) * self.dt
@@ -49,7 +49,8 @@ class Game:
         self.y = self.y + dy
         self.z = self.z + dz
 
-        self.points.append([self.x/60, self.y/60, self.z/60])
+        self.vertices.append([self.x/60, self.y/60, self.z/60])
+        self.color_data.append(colorsys.hsv_to_rgb((len(self.color_data))/255, 1, 1))
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
@@ -61,12 +62,21 @@ class Game:
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
         GL.glRotatef(*self.rotations)
         GL.glBegin(GL.GL_LINE_STRIP)
-        h = 1/255
-        for pt in self.points:
-            GL.glColor3fv(colorsys.hsv_to_rgb(h, 1, 1))
-            h += 1/255
-            GL.glVertex3d(*pt)
+        for pt, clr in zip(self.vertices, self.color_data):
+            GL.glColor3fv(clr)
+            GL.glVertex3dv(pt)
         GL.glEnd()
+
+        # GL.glEnableClientState(GL.GL_VERTEX_ARRAY)
+        # GL.glEnableClientState(GL.GL_COLOR_ARRAY)
+        #
+        # GL.glColorPointer(3, GL.GL_FLOAT, 0, self.color_data)
+        # GL.glVertexPointer(2, GL.GL_FLOAT, 0, self.vertices)
+        # GL.glDrawElements(GL.GL_LINE_STRIP, len(self.color_data), GL. GL_UNSIGNED_INT, )
+        #
+        # GL.glDisableClientState(GL.GL_VERTEX_ARRAY)
+        # GL.glDisableClientState(GL.GL_COLOR_ARRAY)
+
         pygame.display.flip()
 
     def run(self) -> None:

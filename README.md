@@ -4,13 +4,12 @@
 > Heap Sort  
 > Insertion Sort  
 > Quick Sort  
-> Ray Sort  
 
 # Fractals
 > Hilbert Curve  
 > Toothpick Sequence  
-> Infinite Square Fractal
-> Lorenz System
+> Infinite Square Fractal  
+> Lorenz System  
 
 # Mazes
 
@@ -18,6 +17,8 @@
 ##### The `MazeSolver` takes in a `maze.json` file in the same directory as the `MazeSolver.py` file 
 
 # Other
-> Sudoku Solver
-> Fourier Series
-> DiffusionLimitedAggregation
+> Ray Casting
+> Sudoku Solver  
+> Fourier Series  
+> DiffusionLimitedAggregation  
+> Tesseract  
