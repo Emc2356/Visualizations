@@ -22,3 +22,4 @@
 > Fourier Series  
 > DiffusionLimitedAggregation  
 > Tesseract  
+> Lissajous Curve Table
