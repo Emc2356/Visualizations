@@ -1,28 +1,27 @@
 # Sorting Visualizations
 
-> Bubble Sort  
-> Heap Sort  
-> Insertion Sort  
-> Quick Sort  
+> [Bubble Sort](./SortingVisualizations/BubbleSort.py)  
+> [Heap Sort](./SortingVisualizations/HeapSort.py)  
+> [Insertion Sort](./SortingVisualizations/InsertionSort.py)  
+> [Quick Sort](./SortingVisualizations/QuickSort.py)  
 
 # Fractals
-> Hilbert Curve  
-> Toothpick Sequence  
-> Infinite Square Fractal  
-> Lorenz System  
+> [Hilbert Curve](./Fractals/HilbertCurve.py)  
+> [Toothpick Sequence](./Fractals/ToothpickSequence.py)  
+> [Infinite Square Fractal](./Fractals/InfiniteSquareFractal.py)  
+> [Lorenz System](./Fractals/LorenzSystem.py)  
 
 # Mazes
-
-##### The `MazeGenerator` has a few features like you can press ctrl+r to reset ir or ctrl+s to save the maze as a .py or .json file
-##### The `MazeSolver` takes in a `maze.json` file in the same directory as the `MazeSolver.py` file 
+> more info can be found [gere](./Maze/README.md)
 
 # Other
-> Ray Casting  
-> Sudoku Solver  
-> Fourier Series  
-> DiffusionLimitedAggregation  
-> Tesseract  
-> Lissajous Curve Table  
-> Water Ripple  
-> Flocking Simulation  
-> 3D Konts
+> [Ray Casting](./other/RayCasting.py)
+> [Sudoku Solver](./other/SudokuSolver.py)
+> [Fourier Series](./other/FourierSeries.py)
+> [DiffusionLimitedAggregation](./other/DiffusionLimitedAggregation.py)
+> [Hyper Cube](./other/HyperCube.py)
+> [Lissajous Curve Table](./other/LissajousTable.py)
+> [Water Ripple](./other/WaterRipple.py)
+> [Flocking Simulation](./other/FlockingSimulation.py)
+> [3D Knots](./other/3DKnots.py)
+> [double pendulum](./other/DoublePendulum.py)

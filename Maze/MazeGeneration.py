@@ -112,13 +112,13 @@ class Cell:
 
 
 class Game:
-    def __init__(self):
+    def __init__(self, W: int, H: int, res: int):
         pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN])
-        self.W: int = 1200
-        self.H: int = 750
+        self.W: int = W
+        self.H: int = H
         self.WIN: pygame.surface.Surface = pygame.display.set_mode((self.W, self.H))
 
-        self.res: int = 5
+        self.res: int = res
         self.rows: int = self.W // self.res
         self.columns: int = self.H // self.res
 
@@ -336,7 +336,15 @@ while running:
 
 
 if __name__ == '__main__':
+    from argparse import ArgumentParser
+    parser = ArgumentParser(description="A maze generation visualization")
+    parser.add_argument("--w", type=int, default=1200, help="the width of the window")
+    parser.add_argument("--h", type=int, default=750, help="the height of the window")
+    parser.add_argument("--res", type=int, default=5, help="the size of the cells")
+
+    args = parser.parse_args()
+
     pygame.init()
 
-    game = Game()
+    game = Game(args.w, args.h, args.res)
     game.run()

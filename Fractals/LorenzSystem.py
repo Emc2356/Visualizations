@@ -42,12 +42,12 @@ class Game:
         GL.glTranslate(-50/self.W, -50/self.H, 0)  # this is what i call pulling numbers from your ass
 
     def update(self) -> None:
-        dx = (self.a * (self.y - self.x)) * self.dt
-        dy = (self.x * (self.b - self.z) - self.y) * self.dt
-        dz = (self.x * self.y - self.c * self.z) * self.dt
-        self.x = self.x + dx
-        self.y = self.y + dy
-        self.z = self.z + dz
+        dx = (self.a * (self.y - self.x))
+        dy = (self.x * (self.b - self.z) - self.y)
+        dz = (self.x * self.y - self.c * self.z)
+        self.x += dx * self.dt
+        self.y += dy * self.dt
+        self.z += dz * self.dt
 
         self.vertices.append([self.x/60, self.y/60, self.z/60])
         self.color_data.append(colorsys.hsv_to_rgb((len(self.color_data))/255, 1, 1))

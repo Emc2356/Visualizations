@@ -181,7 +181,7 @@ class Game:
         pygame.display.set_caption("Maze solving")
 
     def reset(self) -> None:
-        with open("./maze.json", "r") as f:
+        with open("maze.json", "r") as f:
             data = json.loads(f.read())
 
         self.W = data["screen_size"]["width"]

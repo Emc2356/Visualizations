@@ -128,6 +128,7 @@ class Game:
                 sys.exit()
 
     def draw(self) -> None:
+        print(self.qt.items)
         self.WIN.fill((30, 30, 30))
         for p in self.tree:
             pygame.draw.circle(self.WIN, (255, 0, 0), p.pos, p.r)
