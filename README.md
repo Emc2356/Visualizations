@@ -10,9 +10,10 @@
 > [Toothpick Sequence](./Fractals/ToothpickSequence.py)  
 > [Infinite Square Fractal](./Fractals/InfiniteSquareFractal.py)  
 > [Lorenz System](./Fractals/LorenzSystem.py)  
+> [Mandelbrot set](./Fractals/MandelbrotSet.py)  
 
 # Mazes
-> more info can be found [gere](./Maze/README.md)
+> more info can be found [gere](./Maze/README.md)  
 
 # Other
 > [Ray Casting](./other/RayCasting.py)  
