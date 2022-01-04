@@ -6,8 +6,8 @@ import pygame
 
 USE_PRIMES: bool = True
 
-N: int = 5_000_000  # the number of primes that we will use
-POINT_SIZE: float = 1.5
+N: int = 5000  # the number of primes that we will use
+POINT_SIZE: float = .05
 
 
 if USE_PRIMES:
@@ -51,8 +51,7 @@ class Game:
         self.index_data[1::2] = np.arange(0, N, 2, dtype=int)
 
         pygame.display.set_caption("Prime Number Visualizer as polar coordinates")
-        view = N
-        # view = self.numbers[~0]
+        view = int(self.numbers[~0])
         glOrtho(-view, view, view, -view, view, -view)
 
     def event_handler(self) -> None:
