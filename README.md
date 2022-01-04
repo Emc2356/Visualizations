@@ -26,3 +26,4 @@
 > [Flocking Simulation](./other/FlockingSimulation.py)  
 > [3D Knots](./other/3DKnots.py)  
 > [double pendulum](./other/DoublePendulum.py)  
+> [prime visualizer as polar coordinates](./other/PrimeVisualizerAsPolar.py)
