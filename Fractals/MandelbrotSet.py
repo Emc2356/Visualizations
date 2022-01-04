@@ -1,3 +1,4 @@
+from typing import Tuple, Callable
 from argparse import ArgumentParser
 from math import floor, ceil, log
 from typing import List, Union
@@ -32,7 +33,8 @@ if check_args(["-h", "-help", "--h", "--help"]):
         "[-s {val}] the width of the mandelbrot set, the height is calculated by width/1.5 \n"
         "[--save] it saves the output image \n"
         "[--run] it pops up a window that shows the mandelbrot set with zooming capability \n"
-        "[--green] whether the set is going to be green-ish or not \n"
+        "[--rainbow] whether the set is going to be rainbow-ish or not \n"
+        "[--BW] whether the set is going to be black and white or not \n"
     )
     sys.exit()
 
@@ -55,7 +57,7 @@ IM_END = 1
 
 CORES = os.cpu_count()
 
-GREEN = False
+RAINBOW = False
 RUN = False
 SAVE = False
 BW = False
@@ -68,27 +70,16 @@ def _lerp(a: float, b: float, t: float) -> float:
 
 @nb.njit()
 def hsv_to_rgb(h: float, s: float, v: float):
-    if s == 0.0:
-        return v, v, v
-    i = int(h*6.0) # XXX assume int() truncates!
-    f = (h*6.0) - i
-    p = int(v*(1.0 - s))
-    q = int(v*(1.0 - s*f))
-    t = int(v*(1.0 - s*(1.0-f)))
-    i = i % 6
-    if i == 0:
-        return v, t, p
-    if i == 1:
-        return q, v, p
-    if i == 2:
-        return p, v, t
-    if i == 3:
-        return p, q, v
-    if i == 4:
-        return t, p, v
-    if i == 5:
-        return v, p, q
-    # Cannot get here
+    C = v * s
+    X = C * (1 - abs((h / 60) % 2 - 1))
+    m = int(v - C)
+
+    if h < 60:  return int(255 * C + m), int(255 * X + m), m
+    if h < 120: return int(255 * X + m), int(255 * C + m), m
+    if h < 180: return m, int(255 * C + m), int(255 * X + m)
+    if h < 240: return m, int(255 * X + m), int(255 * C + m)
+    if h < 300: return int(255 * X + m), m, int(255 * C + m)
+    return int(255 * C + m), m, int(255 * X + m)
 
 
 @nb.njit("complex128(int64, int64, int64, int64, float64, float64, float64, float64)")
@@ -150,10 +141,10 @@ def _mandelbrot_set_green(out: np.ndarray, precision: int, infinity: float, re_s
         for x in range(start, width, CORES):
             for y in range(height):
                 m = values[x, y]
-                out[x, y] = (
-                    255 - int(255 * _lerp(hues[floor(m)], hues[ceil(m)], m % 1)),
-                    255,
-                    255 if m < precision else 0
+                out[x, y] = hsv_to_rgb(
+                    360 - int(360 * _lerp(hues[floor(m)], hues[ceil(m)], m % 1)),
+                    1,
+                    1 if m < precision else 0
                 )
 
 
@@ -194,7 +185,7 @@ def mandelbrot_set(width: int, height: int, precision: int, infinity: float, inA
         assert inArr.shape[2] == 3, "the third dimension should be of length 3"
         output = inArr
 
-    if GREEN:
+    if RAINBOW:
         _mandelbrot_set_green(output, precision, infinity, RE_START, RE_END, IM_START, IM_END)
     elif BW:
         _mandelbrot_set_BW(output, precision, infinity, RE_START, RE_END, IM_START, IM_END)
@@ -252,7 +243,7 @@ def run_pygame():
 if __name__ == '__main__':
     SAVE = check_args("--save")
     RUN = check_args("--run")
-    GREEN = check_args("--green")
+    RAINBOW = check_args("--rainbow")
     BW = check_args("--BW")
 
     parser = ArgumentParser(description="a mandelbrot-set generator")
