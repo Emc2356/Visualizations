@@ -1,8 +1,6 @@
 from typing import List, Optional, Tuple
 import pygame
-import math
 import sys
-import os
 
 
 class ToothPick:
@@ -42,7 +40,7 @@ class ToothPick:
         return a, b
 
     def __bool__(self) -> bool:
-        return self.useful
+        return self.useful or self.new
 
 
 class Visualization:
@@ -65,8 +63,9 @@ class Visualization:
     def update(self) -> None:
         toothpicks = self.toothpicks[:]
         for i, tp in sorted(enumerate(self.toothpicks), reverse=True):
-            if not tp.new or not tp:
-                tp.self.useful = False
+            if not tp:
+                tp.useful = False
+                self.toothpicks.pop(i)
                 continue
             tp.new = False
             a, b = tp.create_picks(toothpicks)
