@@ -1,0 +1,6 @@
+PygameHaze
+pygame
+future
+pillow
+numba
+numpy

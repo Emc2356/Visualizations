@@ -1,4 +1,3 @@
-from OpenGL.GL import *
 import OpenGL.GL as GL
 import numpy as np
 import pygame
@@ -6,7 +5,7 @@ import pygame
 
 USE_PRIMES: bool = True
 
-N: int = 5000  # the number of primes that we will use
+N: int = 500_00  # the number of primes that we will use
 POINT_SIZE: float = .05
 
 
@@ -52,7 +51,7 @@ class Game:
 
         pygame.display.set_caption("Prime Number Visualizer as polar coordinates")
         view = int(self.numbers[~0])
-        glOrtho(-view, view, view, -view, view, -view)
+        GL.glOrtho(-view, view, view, -view, view, -view)
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
@@ -89,5 +88,5 @@ def run():
     game.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()
