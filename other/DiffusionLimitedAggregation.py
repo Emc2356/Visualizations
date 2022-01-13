@@ -1,3 +1,4 @@
+from PygameHaze import QuadTree
 from typing import List, Set
 import itertools
 import pygame
@@ -31,57 +32,6 @@ class Particle:
             self.pos = clampVc((self.pos + randomVc()), W, H)
 
 
-class QuadTree:
-    __slots__ = "space", "capacity", "storage", "children"
-
-    def __init__(self, space: pygame.Rect, capacity: int) -> None:
-        self.space: pygame.Rect = space
-        self.capacity: int = capacity
-        self.storage: List[Particle] = []
-        self.children: List[QuadTree] = []
-
-    @property
-    def items(self) -> List[Particle]:
-        return self.storage + list(itertools.chain.from_iterable([ch.items for ch in self.children]))
-
-    def subdivide(self) -> None:
-        new_size = self.space.w/2, self.space.h/2
-        self.children.append(QuadTree(pygame.Rect(*self.space.topleft, *new_size), self.capacity))
-        self.children.append(QuadTree(pygame.Rect(*self.space.midtop, *new_size), self.capacity))
-        self.children.append(QuadTree(pygame.Rect(*self.space.center, *new_size), self.capacity))
-        self.children.append(QuadTree(pygame.Rect(*self.space.midleft, *new_size), self.capacity))
-
-    def list_insert(self, particles: List[Particle]) -> "QuadTree":
-        for p in particles: self.insert(p)
-        return self
-
-    def insert(self, particle: Particle) -> bool:
-        if not self.space.collidepoint(particle.pos):
-            return False
-        if len(self.storage) < self.capacity:
-            self.storage.append(particle)
-            return True
-        else:
-            if not self.children:
-                self.subdivide()
-            for ch in self.children:
-                if ch.insert(particle):
-                    return True
-        return False
-
-    def query(self, rectangle: pygame.Rect) -> List[Particle]:
-        if rectangle.contains(self.space):
-            return self.items
-        found = []
-        if self.space.colliderect(rectangle):
-            for obj in self.storage:
-                if rectangle.collidepoint(obj.pos):
-                    found.append(obj)
-            for ch in self.children:
-                found.extend(ch.query(rectangle))
-        return found
-
-
 class Game:
     def __init__(self):
         self.WIN: pygame.surface.Surface = pygame.display.set_mode((W, H))
@@ -101,7 +51,8 @@ class Game:
         for x in range(0, W, self.radius*2):
             self.tree.add(Particle(pygame.math.Vector2(x, H-self.radius), self.radius, True))
 
-        self.qt: QuadTree = QuadTree(self.WIN.get_rect(), 10).list_insert(self.tree)
+        self.qt: QuadTree = QuadTree(self.WIN.get_rect(), 10)
+        self.qt.list_insert(self.tree)
 
         pygame.display.set_caption("Diffusion-limited aggregation")
 
@@ -128,7 +79,6 @@ class Game:
                 sys.exit()
 
     def draw(self) -> None:
-        print(self.qt.items)
         self.WIN.fill((30, 30, 30))
         for p in self.tree:
             pygame.draw.circle(self.WIN, (255, 0, 0), p.pos, p.r)

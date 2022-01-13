@@ -1,3 +1,4 @@
+from PygameHaze import QuadTree
 from typing import List, Tuple
 import itertools
 import random
@@ -16,55 +17,11 @@ def randomVector():
     return pygame.math.Vector2(random.uniform(-1, 1), random.uniform(-1, 1))
 
 
-class QuadTree:
-    __slots__ = "space", "capacity", "storage", "children"
-
-    def __init__(self, space: pygame.Rect, capacity: int) -> None:
-        self.space: pygame.Rect = space
-        self.capacity: int = capacity
-        self.storage: List[Ship] = []
-        self.children: List[QuadTree] = []
-
-    def get_items(self) -> List["Ship"]:
-        return self.storage + list(itertools.chain.from_iterable([ch.get_items() for ch in self.children]))
-
-    def list_insert(self, ships: List["Ship"]) -> "QuadTree":
-        for ship in ships:
-            self.insert(ship)
-        return self
-
-    def subdivide(self) -> None:
-        new_size = self.space.w/2, self.space.h/2
-        self.children.append(QuadTree(pygame.Rect(self.space.topleft, new_size), self.capacity))
-        self.children.append(QuadTree(pygame.Rect(self.space.midtop, new_size), self.capacity))
-        self.children.append(QuadTree(pygame.Rect(self.space.center, new_size), self.capacity))
-        self.children.append(QuadTree(pygame.Rect(self.space.midleft, new_size), self.capacity))
-
-    def insert(self, obj: "Ship") -> bool:
-        if not self.space.collidepoint(obj.pos):
-            return False
-        if len(self.storage) < self.capacity:
-            self.storage.append(obj)
-            return True
-        else:
-            if not self.children:
-                self.subdivide()
-            for ch in self.children:
-                if ch.insert(obj):
-                    return True
-        return False
-
-    def query(self, rectangle: pygame.Rect) -> List["Ship"]:
-        if rectangle.contains(self.space):
-            return self.get_items()
-        found = []
-        if self.space.colliderect(rectangle):
-            for obj in self.storage:
-                if rectangle.collidepoint(obj.pos):
-                    found.append(obj)
-            for ch in self.children:
-                found.extend(ch.query(rectangle))
-        return found
+setattr(  # needed because the QuadTree is broken atm (-_-)
+    QuadTree,
+    "get_items",
+    lambda self: self.storage + list(itertools.chain.from_iterable([ch.get_items() for ch in self.children]))
+)
 
 
 class Ship:
@@ -190,7 +147,8 @@ class Game:
 
     def draw(self) -> None:
         self.WIN.fill((30, 30, 30))
-        self.qt = QuadTree(self.WIN.get_rect(), 5).list_insert(self.ships)
+        self.qt = QuadTree(self.WIN.get_rect(), 5)
+        self.qt.list_insert(self.ships)
         for ship in self.ships:
             ship.edges()
             ship.flock(self.qt)

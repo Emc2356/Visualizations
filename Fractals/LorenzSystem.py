@@ -1,12 +1,8 @@
 from typing import List, Tuple
-import OpenGL.GLU as GLU
 import OpenGL.GL as GL
-import itertools
 import colorsys
 import pygame
-import math
 import sys
-import os
 
 
 class Game:
@@ -66,16 +62,6 @@ class Game:
             GL.glColor3fv(clr)
             GL.glVertex3dv(pt)
         GL.glEnd()
-
-        # GL.glEnableClientState(GL.GL_VERTEX_ARRAY)
-        # GL.glEnableClientState(GL.GL_COLOR_ARRAY)
-        #
-        # GL.glColorPointer(3, GL.GL_FLOAT, 0, self.color_data)
-        # GL.glVertexPointer(2, GL.GL_FLOAT, 0, self.vertices)
-        # GL.glDrawElements(GL.GL_LINE_STRIP, len(self.color_data), GL. GL_UNSIGNED_INT, )
-        #
-        # GL.glDisableClientState(GL.GL_VERTEX_ARRAY)
-        # GL.glDisableClientState(GL.GL_COLOR_ARRAY)
 
         pygame.display.flip()
 
