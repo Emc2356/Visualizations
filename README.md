@@ -10,6 +10,7 @@
 > [Infinite Square Fractal](./Fractals/InfiniteSquareFractal.py)  
 > [Lorenz System](./Fractals/LorenzSystem.py)  
 > [Mandelbrot set](./Fractals/MandelbrotSet.py)  
+> [Angle drawing](./Fractals/AngleDrawing.py)  
 
 # Mazes
 > more info can be found [gere](./Maze/README.md)  

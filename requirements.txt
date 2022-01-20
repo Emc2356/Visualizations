@@ -4,3 +4,5 @@ future
 pillow
 numba
 numpy
+# for numpy.dot support in the jit compiler from numba.jit
+SciPy
