@@ -6,7 +6,7 @@ import pygame
 USE_PRIMES: bool = True
 
 N: int = 500_00  # the number of primes that we will use
-POINT_SIZE: float = .05
+POINT_SIZE: float = 0.05
 
 
 if USE_PRIMES:
@@ -19,7 +19,9 @@ class Game:
         self.W: int = 750
         self.H: int = 750
 
-        self.WIN: pygame.surface.Surface = pygame.display.set_mode((self.W, self.H), pygame.DOUBLEBUF | pygame.OPENGL)
+        self.WIN: pygame.surface.Surface = pygame.display.set_mode(
+            (self.W, self.H), pygame.DOUBLEBUF | pygame.OPENGL
+        )
 
         self.running: bool = True
         self.clock: pygame.time.Clock = pygame.time.Clock()
@@ -35,8 +37,8 @@ class Game:
         self.y: np.ndarray = self.numbers * np.sin(self.numbers)
 
         self.vertex_data = np.zeros(N * 2, dtype=float)
-        self.vertex_data[0:N*2:2] = self.x
-        self.vertex_data[1:N*2:2] = self.y
+        self.vertex_data[0 : N * 2 : 2] = self.x
+        self.vertex_data[1 : N * 2 : 2] = self.y
 
         # rgb value: (170, 255, 170)
         # hex value: 0xAAFFAA
@@ -55,7 +57,9 @@ class Game:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 raise SystemExit
 
@@ -69,7 +73,9 @@ class Game:
 
         GL.glVertexPointer(2, GL.GL_FLOAT, 0, self.vertex_data)
         GL.glColorPointer(3, GL.GL_FLOAT, 0, self.color_data)
-        GL.glDrawElements(GL.GL_POINTS, len(self.index_data), GL.GL_UNSIGNED_INT, self.index_data)
+        GL.glDrawElements(
+            GL.GL_POINTS, len(self.index_data), GL.GL_UNSIGNED_INT, self.index_data
+        )
 
         GL.glDisableClientState(GL.GL_VERTEX_ARRAY)
         GL.glDisableClientState(GL.GL_COLOR_ARRAY)

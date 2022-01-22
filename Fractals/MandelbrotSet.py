@@ -74,19 +74,33 @@ def hsv_to_rgb(h: float, s: float, v: float):
     X = C * (1 - abs((h / 60) % 2 - 1))
     m = int(v - C)
 
-    if h < 60:  return int(255 * C + m), int(255 * X + m), m
-    if h < 120: return int(255 * X + m), int(255 * C + m), m
-    if h < 180: return m, int(255 * C + m), int(255 * X + m)
-    if h < 240: return m, int(255 * X + m), int(255 * C + m)
-    if h < 300: return int(255 * X + m), m, int(255 * C + m)
+    if h < 60:
+        return int(255 * C + m), int(255 * X + m), m
+    if h < 120:
+        return int(255 * X + m), int(255 * C + m), m
+    if h < 180:
+        return m, int(255 * C + m), int(255 * X + m)
+    if h < 240:
+        return m, int(255 * X + m), int(255 * C + m)
+    if h < 300:
+        return int(255 * X + m), m, int(255 * C + m)
     return int(255 * C + m), m, int(255 * X + m)
 
 
 @nb.njit("complex128(int64, int64, int64, int64, float64, float64, float64, float64)")
-def _index_to_complex(i: int, j: int, width: int, height: int, re_start: float, re_end: float, im_start: float, im_end: float) -> complex:
+def _index_to_complex(
+    i: int,
+    j: int,
+    width: int,
+    height: int,
+    re_start: float,
+    re_end: float,
+    im_start: float,
+    im_end: float,
+) -> complex:
     return complex(
         re_start + (i / width) * (re_end - re_start),
-        im_start + (j / height) * (im_end - im_start)
+        im_start + (j / height) * (im_end - im_start),
     )
 
 
@@ -111,7 +125,15 @@ def _mandelbrot_at(c: complex, precision: int, infinity: float) -> float:
 
 
 @nb.njit(parallel=True)
-def _mandelbrot_set_green(out: np.ndarray, precision: int, infinity: float, re_start: float, re_end: float, im_start: float, im_end: float):
+def _mandelbrot_set_green(
+    out: np.ndarray,
+    precision: int,
+    infinity: float,
+    re_start: float,
+    re_end: float,
+    im_start: float,
+    im_end: float,
+):
     width = out.shape[0]
     height = out.shape[1]
 
@@ -122,7 +144,13 @@ def _mandelbrot_set_green(out: np.ndarray, precision: int, infinity: float, re_s
         for x in range(start, width, CORES):
             for y in range(height):
                 # calculate C then do the iterations
-                m = _mandelbrot_at_green(_index_to_complex(x, y, width, height, re_start, re_end, im_start, im_end), precision, infinity)
+                m = _mandelbrot_at_green(
+                    _index_to_complex(
+                        x, y, width, height, re_start, re_end, im_start, im_end
+                    ),
+                    precision,
+                    infinity,
+                )
                 values[x, y] = m
                 if m < precision:
                     histogram[floor(m)] += 1
@@ -130,7 +158,9 @@ def _mandelbrot_set_green(out: np.ndarray, precision: int, infinity: float, re_s
     total = histogram.sum()
     np.divide(histogram, total, histogram)
 
-    hues = np.zeros(precision,)
+    hues = np.zeros(
+        precision,
+    )
     h = 0
     for i in range(precision):
         h += histogram[i]
@@ -144,40 +174,78 @@ def _mandelbrot_set_green(out: np.ndarray, precision: int, infinity: float, re_s
                 out[x, y] = hsv_to_rgb(
                     360 - int(360 * _lerp(hues[floor(m)], hues[ceil(m)], m % 1)),
                     1,
-                    1 if m < precision else 0
+                    1 if m < precision else 0,
                 )
 
 
 @nb.njit(parallel=True)
-def _mandelbrot_set_BW(out: np.ndarray, precision: int, infinity: float, re_start: float, re_end: float, im_start: float, im_end: float):
+def _mandelbrot_set_BW(
+    out: np.ndarray,
+    precision: int,
+    infinity: float,
+    re_start: float,
+    re_end: float,
+    im_start: float,
+    im_end: float,
+):
     width = out.shape[0]
     height = out.shape[1]
     for start in nb.prange(CORES):
         for x in range(start, width, CORES):
             for y in range(height):
-                m = floor(_mandelbrot_at(_index_to_complex(x, y, width, height, re_start, re_end, im_start, im_end), precision, infinity))
+                m = floor(
+                    _mandelbrot_at(
+                        _index_to_complex(
+                            x, y, width, height, re_start, re_end, im_start, im_end
+                        ),
+                        precision,
+                        infinity,
+                    )
+                )
                 out[x, y][:] = 0 if m == precision else 255
 
 
 @nb.njit(parallel=True)
-def _mandelbrot_set(out: np.ndarray, precision: int, infinity: float, re_start: float, re_end: float, im_start: float, im_end: float):
+def _mandelbrot_set(
+    out: np.ndarray,
+    precision: int,
+    infinity: float,
+    re_start: float,
+    re_end: float,
+    im_start: float,
+    im_end: float,
+):
     width = out.shape[0]
     height = out.shape[1]
     for start in nb.prange(CORES):
         for x in range(start, width, CORES):
             for y in range(height):
                 # calculate C then do the iterations
-                m = _mandelbrot_at(_index_to_complex(x, y, width, height, re_start, re_end, im_start, im_end), precision, infinity)
+                m = _mandelbrot_at(
+                    _index_to_complex(
+                        x, y, width, height, re_start, re_end, im_start, im_end
+                    ),
+                    precision,
+                    infinity,
+                )
                 if m < precision:
                     out[x, y] = (
                         int(m + ((m * 20) % 156)),
                         int(100 + ((m * 20) % 156)),
-                        int(255)
+                        int(255),
                     )
-                else: out[x, y][:] = 0
+                else:
+                    out[x, y][:] = 0
 
 
-def mandelbrot_set(width: int, height: int, precision: int, infinity: float, inArr: np.ndarray=None, pg: bool=False) -> np.ndarray:
+def mandelbrot_set(
+    width: int,
+    height: int,
+    precision: int,
+    infinity: float,
+    inArr: np.ndarray = None,
+    pg: bool = False,
+) -> np.ndarray:
     if inArr is None:
         output = np.ndarray((width, height, 3))
     else:
@@ -186,9 +254,13 @@ def mandelbrot_set(width: int, height: int, precision: int, infinity: float, inA
         output = inArr
 
     if RAINBOW:
-        _mandelbrot_set_green(output, precision, infinity, RE_START, RE_END, IM_START, IM_END)
+        _mandelbrot_set_green(
+            output, precision, infinity, RE_START, RE_END, IM_START, IM_END
+        )
     elif BW:
-        _mandelbrot_set_BW(output, precision, infinity, RE_START, RE_END, IM_START, IM_END)
+        _mandelbrot_set_BW(
+            output, precision, infinity, RE_START, RE_END, IM_START, IM_END
+        )
     else:
         _mandelbrot_set(output, precision, infinity, RE_START, RE_END, IM_START, IM_END)
 
@@ -228,11 +300,18 @@ def run_pygame():
         clock.tick(FPS)
         if update:
             array.fill(0)
-            pygame.surfarray.blit_array(WIN, mandelbrot_set(WIDTH, HEIGHT, PRECISION, INFINITY, inArr=array, pg=True))
+            pygame.surfarray.blit_array(
+                WIN,
+                mandelbrot_set(
+                    WIDTH, HEIGHT, PRECISION, INFINITY, inArr=array, pg=True
+                ),
+            )
             update = False
             pygame.display.update()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit(-1)
             elif event.type == pygame.MOUSEWHEEL:
@@ -240,16 +319,34 @@ def run_pygame():
                 update = True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     SAVE = check_args("--save")
     RUN = check_args("--run")
     RAINBOW = check_args("--rainbow")
     BW = check_args("--BW")
 
     parser = ArgumentParser(description="a mandelbrot-set generator")
-    parser.add_argument('-p', type=int, metavar="int", default=PRECISION, help=f"the precision of the set (default {PRECISION})")
-    parser.add_argument("-i", type=int, metavar="int", default=INFINITY, help=f"the finite infinity of the set (default {INFINITY})")
-    parser.add_argument("-s", type=int, metavar="int", default=WIDTH, help=f"the size of the set (default {WIDTH})")
+    parser.add_argument(
+        "-p",
+        type=int,
+        metavar="int",
+        default=PRECISION,
+        help=f"the precision of the set (default {PRECISION})",
+    )
+    parser.add_argument(
+        "-i",
+        type=int,
+        metavar="int",
+        default=INFINITY,
+        help=f"the finite infinity of the set (default {INFINITY})",
+    )
+    parser.add_argument(
+        "-s",
+        type=int,
+        metavar="int",
+        default=WIDTH,
+        help=f"the size of the set (default {WIDTH})",
+    )
 
     args = parser.parse_args()
 
@@ -266,11 +363,16 @@ if __name__ == '__main__':
     print(f"creating the mandelbrot-set of size {WIDTH}x{HEIGHT}...")
     start_time = time.perf_counter()
     output = mandelbrot_set(WIDTH, HEIGHT, PRECISION, INFINITY)
-    print(f"for a mandelbrot-set of size {WIDTH}x{HEIGHT} it took {time.perf_counter() - start_time}s")
+    print(
+        f"for a mandelbrot-set of size {WIDTH}x{HEIGHT} it took {time.perf_counter() - start_time}s"
+    )
 
     image = Image.fromarray(np.uint8(output), "RGB")
     if SAVE:
-        image.save(f"mandelbrot-set ({WIDTH=}, {HEIGHT=}, {PRECISION=}, {INFINITY=}).png", "PNG")
+        image.save(
+            f"mandelbrot-set ({WIDTH=}, {HEIGHT=}, {PRECISION=}, {INFINITY=}).png",
+            "PNG",
+        )
     image = Image.fromarray(np.uint8(output), "RGB")
     image.show()
     sys.exit(0)

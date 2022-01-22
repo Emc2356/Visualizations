@@ -40,8 +40,8 @@ class Game:
         self.WIN: pygame.surface.Surface = pygame.display.set_mode((self.W, self.H))
 
         self.size: int = 100
-        self.rows: int = self.W//self.size - 1
-        self.columns: int = self.H//self.size - 1
+        self.rows: int = self.W // self.size - 1
+        self.columns: int = self.H // self.size - 1
 
         self.running: bool = True
         self.clock: pygame.time.Clock = pygame.time.Clock()
@@ -55,7 +55,9 @@ class Game:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
 
@@ -64,37 +66,45 @@ class Game:
 
         buffer = 2
 
-        pos = pygame.math.Vector2(self.size, self.size)/2 + pygame.math.Vector2(buffer, buffer)
+        pos = pygame.math.Vector2(self.size, self.size) / 2 + pygame.math.Vector2(
+            buffer, buffer
+        )
         for i in range(self.columns):
             pos.y += self.size
-            pygame.draw.circle(self.WIN, (255, 255, 255), pos, self.size/2 - buffer, 1)
-            point_pos = pos + ((self.size/2 - 2) * math.cos(self.time * (i + 1)), (self.size/2 - 2) * math.sin(self.time * (i + 1)))
             pygame.draw.circle(
-                self.WIN,
-                (255, 255, 255),
-                point_pos,
-                3
+                self.WIN, (255, 255, 255), pos, self.size / 2 - buffer, 1
             )
-            pygame.draw.line(self.WIN, (255, 255, 255), (0, point_pos.y), (self.W, point_pos.y), 1)
+            point_pos = pos + (
+                (self.size / 2 - 2) * math.cos(self.time * (i + 1)),
+                (self.size / 2 - 2) * math.sin(self.time * (i + 1)),
+            )
+            pygame.draw.circle(self.WIN, (255, 255, 255), point_pos, 3)
+            pygame.draw.line(
+                self.WIN, (255, 255, 255), (0, point_pos.y), (self.W, point_pos.y), 1
+            )
             for r in range(self.rows):
                 self.curves[i][r].y = point_pos.y
 
-        pos = pygame.math.Vector2(self.size, self.size)/2 + pygame.math.Vector2(buffer, buffer)
+        pos = pygame.math.Vector2(self.size, self.size) / 2 + pygame.math.Vector2(
+            buffer, buffer
+        )
         for j in range(self.rows):
             pos.x += self.size
-            pygame.draw.circle(self.WIN, (255, 255, 255), pos, self.size/2 - buffer, 1)
-            point_pos = pos + ((self.size/2 - 2) * math.cos(self.time * (j + 1)), (self.size/2 - 2) * math.sin(self.time * (j + 1)))
             pygame.draw.circle(
-                self.WIN,
-                (255, 255, 255),
-                point_pos,
-                3
+                self.WIN, (255, 255, 255), pos, self.size / 2 - buffer, 1
             )
-            pygame.draw.line(self.WIN, (255, 255, 255), (point_pos.x, 0), (point_pos.x, self.H), 1)
+            point_pos = pos + (
+                (self.size / 2 - 2) * math.cos(self.time * (j + 1)),
+                (self.size / 2 - 2) * math.sin(self.time * (j + 1)),
+            )
+            pygame.draw.circle(self.WIN, (255, 255, 255), point_pos, 3)
+            pygame.draw.line(
+                self.WIN, (255, 255, 255), (point_pos.x, 0), (point_pos.x, self.H), 1
+            )
             for c in range(self.columns):
                 self.curves[c][j].x = point_pos.x
 
-        self.time += math.pi/300
+        self.time += math.pi / 300
 
         for row in self.curves:
             for curve in row:
@@ -114,5 +124,5 @@ def run():
     game.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

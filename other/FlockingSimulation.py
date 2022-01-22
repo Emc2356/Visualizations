@@ -20,7 +20,8 @@ def randomVector():
 setattr(  # needed because the QuadTree is broken atm (-_-)
     QuadTree,
     "get_items",
-    lambda self: self.storage + list(itertools.chain.from_iterable([ch.get_items() for ch in self.children]))
+    lambda self: self.storage
+    + list(itertools.chain.from_iterable([ch.get_items() for ch in self.children])),
 )
 
 
@@ -29,7 +30,9 @@ class Ship:
     max_force = 0.5
 
     def __init__(self) -> None:
-        self.pos: pygame.math.Vector2 = pygame.math.Vector2(random.randint(0, W), random.randint(0, H))
+        self.pos: pygame.math.Vector2 = pygame.math.Vector2(
+            random.randint(0, W), random.randint(0, H)
+        )
         self.vel: pygame.math.Vector2 = randomVector()
         self.vel.scale_to_length(random.choice([2, 4]))
         self.acc: pygame.math.Vector2 = pygame.math.Vector2()
@@ -51,7 +54,8 @@ class Ship:
             steering /= total
             steering.scale_to_length(self.max_speed)
             steering -= self.vel
-            if steering.magnitude_squared() > self.max_force * self.max_force: steering.scale_to_length(self.max_force)
+            if steering.magnitude_squared() > self.max_force * self.max_force:
+                steering.scale_to_length(self.max_force)
         return steering
 
     def separation(self, others: List["Ship"]) -> pygame.math.Vector2:
@@ -68,10 +72,13 @@ class Ship:
 
         if total > 0:
             steering /= total
-            try: steering.scale_to_length(self.max_speed)
-            except ValueError: pass
+            try:
+                steering.scale_to_length(self.max_speed)
+            except ValueError:
+                pass
             steering -= self.vel
-            if steering.magnitude_squared() > self.max_force * self.max_force: steering.scale_to_length(self.max_force)
+            if steering.magnitude_squared() > self.max_force * self.max_force:
+                steering.scale_to_length(self.max_force)
         return steering
 
     def cohesion(self, others: List["Ship"]) -> pygame.math.Vector2:
@@ -87,31 +94,50 @@ class Ship:
         if total > 0:
             steering /= total
             steering -= self.pos
-            try: steering.scale_to_length(self.max_speed)
-            except ValueError: pass
+            try:
+                steering.scale_to_length(self.max_speed)
+            except ValueError:
+                pass
             steering -= self.vel
-            if steering.magnitude_squared() > self.max_force * self.max_force: steering.scale_to_length(self.max_force)
+            if steering.magnitude_squared() > self.max_force * self.max_force:
+                steering.scale_to_length(self.max_force)
 
         return steering
 
     def flock(self, others: QuadTree) -> "Ship":
-        al = self.align(others.query(
-            pygame.Rect(self.pos - pygame.math.Vector2(25, 25), pygame.math.Vector2(25*2, 25*2)))
+        al = self.align(
+            others.query(
+                pygame.Rect(
+                    self.pos - pygame.math.Vector2(25, 25),
+                    pygame.math.Vector2(25 * 2, 25 * 2),
+                )
+            )
         )
-        se = self.separation(others.query(
-            pygame.Rect(self.pos - pygame.math.Vector2(24, 24), pygame.math.Vector2(24*2, 24*2)))
+        se = self.separation(
+            others.query(
+                pygame.Rect(
+                    self.pos - pygame.math.Vector2(24, 24),
+                    pygame.math.Vector2(24 * 2, 24 * 2),
+                )
+            )
         )
-        co = self.cohesion(others.query(
-            pygame.Rect(self.pos - pygame.math.Vector2(50, 50), pygame.math.Vector2(50*2, 50*2)))
+        co = self.cohesion(
+            others.query(
+                pygame.Rect(
+                    self.pos - pygame.math.Vector2(50, 50),
+                    pygame.math.Vector2(50 * 2, 50 * 2),
+                )
+            )
         )
 
         self.acc += al + se + co
         return self
 
-    def update(self, dt: float=1) -> "Ship":
+    def update(self, dt: float = 1) -> "Ship":
         self.vel += self.acc
         self.pos += self.vel * dt
-        if self.vel.magnitude_squared() > self.max_force * self.max_force: self.vel.scale_to_length(self.max_force)
+        if self.vel.magnitude_squared() > self.max_force * self.max_force:
+            self.vel.scale_to_length(self.max_force)
         self.acc.update(0, 0)
         return self
 
@@ -138,7 +164,9 @@ class Game:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -170,5 +198,5 @@ def run():
     game.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

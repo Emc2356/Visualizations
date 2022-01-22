@@ -5,18 +5,34 @@ import sys
 
 
 class Source:
-    def __init__(self, WIN: pygame.surface.Surface, x: int, y: int, radius: int=5, max_distance: float=float("inf"), ray_generation: Iterable=range(0, 360, 1)) -> None:
+    def __init__(
+        self,
+        WIN: pygame.surface.Surface,
+        x: int,
+        y: int,
+        radius: int = 5,
+        max_distance: float = float("inf"),
+        ray_generation: Iterable = range(0, 360, 1),
+    ) -> None:
         self.WIN: pygame.surface.Surface = WIN
         self.pos: pygame.math.Vector2 = pygame.math.Vector2(x, y)
         self.max_distance: float = max_distance
         self.radius: int = radius
-        self.rays: List[pygame.math.Vector2] = [pygame.math.Vector2(1, 0).rotate(a).normalize() for a in ray_generation]
+        self.rays: List[pygame.math.Vector2] = [
+            pygame.math.Vector2(1, 0).rotate(a).normalize() for a in ray_generation
+        ]
 
     def move(self, pos: Union[List[int], Tuple[int, int], pygame.math.Vector2]) -> None:
         self.pos.x = pos[0]
         self.pos.y = pos[1]
 
-    def cast(self, walls: Union[List[List[int]], Tuple[Tuple[int]], List[Tuple[int]], Tuple[List[int]]], color: Union[List[int], Tuple[int, int, int]]=(255, 255, 255)) -> None:
+    def cast(
+        self,
+        walls: Union[
+            List[List[int]], Tuple[Tuple[int]], List[Tuple[int]], Tuple[List[int]]
+        ],
+        color: Union[List[int], Tuple[int, int, int]] = (255, 255, 255),
+    ) -> None:
         for ray in self.rays:
             x3 = self.pos.x
             y3 = self.pos.y
@@ -26,7 +42,9 @@ class Source:
             closest = None
             for x1, y1, x2, y2 in walls:
                 den = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
-                if den == 0:  # line are parallel and they will never meet even if you stretch them out infinitely
+                if (
+                    den == 0
+                ):  # line are parallel and they will never meet even if you stretch them out infinitely
                     continue
 
                 t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / den
@@ -40,7 +58,17 @@ class Source:
             if closest:
                 pygame.draw.line(self.WIN, color, self.pos, closest, 1)
 
-    def draw(self, color: Union[pygame.color.Color, str, Tuple[int, int, int], List[int], int, Tuple[int, int, int, int]]=(255, 255, 255)) -> None:
+    def draw(
+        self,
+        color: Union[
+            pygame.color.Color,
+            str,
+            Tuple[int, int, int],
+            List[int],
+            int,
+            Tuple[int, int, int, int],
+        ] = (255, 255, 255),
+    ) -> None:
         pygame.draw.circle(self.WIN, color, self.pos, self.radius)
 
 
@@ -65,9 +93,17 @@ class Visualization:
     def reset(self) -> None:
         del self.source
         del self.walls
-        self.source = Source(self.WIN, self.W//2, self.H//2)
+        self.source = Source(self.WIN, self.W // 2, self.H // 2)
         # the random walls
-        self.walls = [[random.randint(0, self.W), random.randint(0, self.H), random.randint(0, self.W), random.randint(0, self.H)] for _ in range(5)]
+        self.walls = [
+            [
+                random.randint(0, self.W),
+                random.randint(0, self.H),
+                random.randint(0, self.W),
+                random.randint(0, self.H),
+            ]
+            for _ in range(5)
+        ]
         # border walls so it has something to hit on all of the time (if the max_distance in the source is not inf)
         self.walls.append([0, 0, self.W, 0])
         self.walls.append([self.W, 0, self.W, self.H])
@@ -85,7 +121,9 @@ class Visualization:
     def event_handler(self) -> None:
         self.source.move(pygame.mouse.get_pos())
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
@@ -106,5 +144,5 @@ def run() -> None:
     vis.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

@@ -12,7 +12,9 @@ class Game:
     def __init__(self):
         self.W: int = 500
         self.H: int = 500
-        self.WIN: pygame.surface.Surface = pygame.display.set_mode((self.W, self.H), pygame.DOUBLEBUF | pygame.OPENGL)
+        self.WIN: pygame.surface.Surface = pygame.display.set_mode(
+            (self.W, self.H), pygame.DOUBLEBUF | pygame.OPENGL
+        )
 
         self.running: bool = True
         self.clock: pygame.time.Clock = pygame.time.Clock()
@@ -33,7 +35,9 @@ class Game:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
@@ -78,5 +82,5 @@ def run():
     game.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

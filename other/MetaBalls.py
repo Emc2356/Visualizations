@@ -12,14 +12,12 @@ import os
 CORES = os.cpu_count()
 
 
-BallsDType = np.dtype([
-    ("pos", (np.float64, (2,))),
-    ("vel", (np.float64, (2,))),
-    ("radius", np.int64)
-])
+BallsDType = np.dtype(
+    [("pos", (np.float64, (2,))), ("vel", (np.float64, (2,))), ("radius", np.int64)]
+)
 
 
-def update_balls(width: int, height: int, balls: np.recarray, dt: float=1) -> None:
+def update_balls(width: int, height: int, balls: np.recarray, dt: float = 1) -> None:
     boarders = [width, height]
     for ball in balls:
         ball.pos += ball.vel * dt
@@ -38,11 +36,16 @@ def hsv_to_rgb(h: float, s: float, v: float):
     X = C * (1 - abs((h / 60) % 2 - 1))
     m = int(v - C)
 
-    if h < 60:  return int(255 * C + m), int(255 * X + m), m
-    if h < 120: return int(255 * X + m), int(255 * C + m), m
-    if h < 180: return m, int(255 * C + m), int(255 * X + m)
-    if h < 240: return m, int(255 * X + m), int(255 * C + m)
-    if h < 300: return int(255 * X + m), m, int(255 * C + m)
+    if h < 60:
+        return int(255 * C + m), int(255 * X + m), m
+    if h < 120:
+        return int(255 * X + m), int(255 * C + m), m
+    if h < 180:
+        return m, int(255 * C + m), int(255 * X + m)
+    if h < 240:
+        return m, int(255 * X + m), int(255 * C + m)
+    if h < 300:
+        return int(255 * X + m), m, int(255 * C + m)
     return int(255 * C + m), m, int(255 * X + m)
 
 
@@ -91,7 +94,7 @@ class Game:
             balls[i].radius = radius
             balls[i].pos = (
                 random.randint(radius, self.W - radius),
-                random.randint(radius, self.H - radius)
+                random.randint(radius, self.H - radius),
             )
             balls[i].vel = (np.random.random(2) * 2 - 1) * 5
         self.balls = balls
@@ -103,7 +106,9 @@ class Game:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
 
@@ -127,5 +132,5 @@ def run():
     game.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

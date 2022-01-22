@@ -48,8 +48,10 @@ class Game:
         self.radius = 8
         self.shrink = 0.9995
 
-        for x in range(0, W, self.radius*2):
-            self.tree.add(Particle(pygame.math.Vector2(x, H-self.radius), self.radius, True))
+        for x in range(0, W, self.radius * 2):
+            self.tree.add(
+                Particle(pygame.math.Vector2(x, H - self.radius), self.radius, True)
+            )
 
         self.qt: QuadTree = QuadTree(self.WIN.get_rect(), 10)
         self.qt.list_insert(self.tree)
@@ -59,12 +61,22 @@ class Game:
     def update(self) -> None:
         for _ in range(self.iterations):
             while len(self.particles) < self.particle_limit:
-                self.particles.add(Particle(pygame.math.Vector2(random.random()*W, random.random()*10), self.radius))
+                self.particles.add(
+                    Particle(
+                        pygame.math.Vector2(random.random() * W, random.random() * 10),
+                        self.radius,
+                    )
+                )
             to_remove = set()
             for p in self.particles:
                 p.move()
-                for o in self.qt.query(pygame.Rect(p.pos - (self.radius, self.radius), (self.radius * 3, self.radius * 3))):
-                    if p.pos.distance_to(o.pos) < self.radius*2 - 2:
+                for o in self.qt.query(
+                    pygame.Rect(
+                        p.pos - (self.radius, self.radius),
+                        (self.radius * 3, self.radius * 3),
+                    )
+                ):
+                    if p.pos.distance_to(o.pos) < self.radius * 2 - 2:
                         p.stuck = True
                         to_remove.add(p)
                         self.tree.add(p)
@@ -74,7 +86,9 @@ class Game:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
 
@@ -99,5 +113,5 @@ def run():
     game.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

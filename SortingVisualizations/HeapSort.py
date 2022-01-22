@@ -46,7 +46,10 @@ class Visualization:
             largest = r
 
         if largest != i:
-            self.array[i], self.array[largest] = self.array[largest], self.array[i]  # swap
+            self.array[i], self.array[largest] = (
+                self.array[largest],
+                self.array[i],
+            )  # swap
 
             # Heapify the root.
             self.heapify(n, largest)
@@ -69,13 +72,17 @@ class Visualization:
     def draw(self) -> None:
         self.WIN.fill((0, 0, 0))
         for x, height in enumerate(self.array):
-            pygame.draw.line(self.WIN, (255, 255, 255), (x, self.H), (x, self.H - height), 1)
+            pygame.draw.line(
+                self.WIN, (255, 255, 255), (x, self.H), (x, self.H - height), 1
+            )
         pygame.display.update()
 
     def event_handler(self) -> None:
         mods = pygame.key.get_mods()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
@@ -95,5 +102,5 @@ def run() -> None:
     vis.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

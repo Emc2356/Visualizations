@@ -19,7 +19,8 @@ class Visualization:
         self.total = self.N * self.N
         self.length = self.W / self.N
         self.path: List[pygame.math.Vector2] = [
-            (self.hilbert(i) * self.length) + [self.length / 2, self.length / 2] for i in range(self.total)
+            (self.hilbert(i) * self.length) + [self.length / 2, self.length / 2]
+            for i in range(self.total)
         ]
         self.counter = 0
         self.progress_per_call = 1
@@ -34,7 +35,7 @@ class Visualization:
             pygame.math.Vector2(0, 0),
             pygame.math.Vector2(0, 1),
             pygame.math.Vector2(1, 1),
-            pygame.math.Vector2(1, 0)
+            pygame.math.Vector2(1, 0),
         ]
 
         index = i & 3
@@ -63,14 +64,22 @@ class Visualization:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
 
     def draw(self) -> None:
         self.WIN.fill((0, 0, 0))
         for i in range(1, self.counter):
-            pygame.draw.line(self.WIN, (255, 255, 255), (self.path[i].x, self.path[i].y), (self.path[i-1].x, self.path[i-1].y), 1)
+            pygame.draw.line(
+                self.WIN,
+                (255, 255, 255),
+                (self.path[i].x, self.path[i].y),
+                (self.path[i - 1].x, self.path[i - 1].y),
+                1,
+            )
         self.counter += self.progress_per_call
         if self.counter >= self.total:
             self.counter = 0
@@ -92,5 +101,5 @@ def run() -> None:
     vis.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

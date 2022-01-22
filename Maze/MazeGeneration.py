@@ -17,7 +17,14 @@ dark_purple = (216, 191, 216)
 
 
 class Cell:
-    def __init__(self, WIN: pygame.surface.Surface, j: int, i: int, res: int, grid: List[List["Cell"]]):
+    def __init__(
+        self,
+        WIN: pygame.surface.Surface,
+        j: int,
+        i: int,
+        res: int,
+        grid: List[List["Cell"]],
+    ):
         self.WIN: pygame.surface.Surface = WIN
         self.j: int = j
         self.i: int = i
@@ -33,21 +40,24 @@ class Cell:
             "top": True,
             "right": True,
             "bottom": True,
-            "left": True
+            "left": True,
         }
 
         self.corner_cords = {
             "topleft": [self.x, self.y],
             "topright": [self.x + res, self.y],
             "bottomright": [self.x + res, self.y + res],
-            "bottomleft": [self.x, self.y + res]
+            "bottomleft": [self.x, self.y + res],
         }
 
         self.border_cords: Dict[str, list[List[int]]] = {
             "top": [self.corner_cords["topleft"], self.corner_cords["topright"]],
             "right": [self.corner_cords["topright"], self.corner_cords["bottomright"]],
-            "bottom": [self.corner_cords["bottomright"], self.corner_cords["bottomleft"]],
-            "left": [self.corner_cords["bottomleft"], self.corner_cords["topleft"]]
+            "bottom": [
+                self.corner_cords["bottomright"],
+                self.corner_cords["bottomleft"],
+            ],
+            "left": [self.corner_cords["bottomleft"], self.corner_cords["topleft"]],
         }
 
     def visit(self) -> None:
@@ -152,14 +162,17 @@ class Game:
         self.starting_cell: Cell = self.current_cell
 
         self.path: List[Cell] = [self.current_cell]
-        if self.single_cell_update: self.draw()
+        if self.single_cell_update:
+            self.draw()
         self.finished = False
         self.starting_time = time.time()
 
     def event_handler(self) -> None:
         mods = pygame.key.get_mods()
         for event in pygame.event.get():  # type: pygame.event.Event
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if mods & pygame.K_LCTRL:
@@ -173,10 +186,15 @@ class Game:
         file_extensions = [
             ["JSON files", "*.json"],
             ["Python files", "*.py"],
-            ["All files", "*.*"]
+            ["All files", "*.*"],
         ]
-        f = asksaveasfile(filetypes=file_extensions, defaultextension=file_extensions, title="Save As",
-                          initialfile="untitled", mode="w")
+        f = asksaveasfile(
+            filetypes=file_extensions,
+            defaultextension=file_extensions,
+            title="Save As",
+            initialfile="untitled",
+            mode="w",
+        )
         if f is not None:
             try:
                 filename = f.name
@@ -257,28 +275,25 @@ while running:
         for cell in row:
             cell.draw()
     pygame.display.update()
-"""[1:]
+"""[
+                        1:
+                    ]
                     f.write(data)
                 else:
                     data: Dict[str, any] = {
                         "map": [
                             [
-                                {
-                                    "j": cell.j,
-                                    "i": cell.i,
-                                    "walls": cell.walls
-                                } for cell in row
-                            ] for row in self.grid
+                                {"j": cell.j, "i": cell.i, "walls": cell.walls}
+                                for cell in row
+                            ]
+                            for row in self.grid
                         ],
                         "rows": self.rows,
                         "columns": self.columns,
                         "res": self.grid[0][0].res,
                         "start": [self.starting_cell.i, self.starting_cell.j],
                         "end": [len(self.grid) - 1, len(self.grid[0]) - 1],
-                        "screen_size": {
-                            "width": self.W,
-                            "height": self.H
-                        }
+                        "screen_size": {"width": self.W, "height": self.H},
                     }
                     json.dump(data, f, indent=4)
             finally:
@@ -310,14 +325,20 @@ while running:
                         self.finished = True
                         pygame.display.update()
                         print(
-                            f"for a maze with {self.columns * self.rows} cells it took: {time.time() - self.starting_time}s")
+                            f"for a maze with {self.columns * self.rows} cells it took: {time.time() - self.starting_time}s"
+                        )
 
     def draw_cells(self, cells: List["Cell"]) -> None:
         for cell in cells:
             cell.draw()
         pygame.display.update(
-            [min([cell.x for cell in cells]) - self.res, min([cell.y for cell in cells]) - self.res, self.res * 4,
-             self.res * 4])
+            [
+                min([cell.x for cell in cells]) - self.res,
+                min([cell.y for cell in cells]) - self.res,
+                self.res * 4,
+                self.res * 4,
+            ]
+        )
 
     def draw(self) -> None:
         self.WIN.fill((0, 0, 0))
@@ -327,16 +348,19 @@ while running:
         pygame.display.update()
 
     def run(self) -> None:
-        if self.single_cell_update: self.draw()
+        if self.single_cell_update:
+            self.draw()
         while self.running:
             self.clock.tick(self.FPS)
             self.event_handler()
             self.algorithm()
-            if not self.single_cell_update: self.draw()
+            if not self.single_cell_update:
+                self.draw()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     from argparse import ArgumentParser
+
     parser = ArgumentParser(description="A maze generation visualization")
     parser.add_argument("--w", type=int, default=1200, help="the width of the window")
     parser.add_argument("--h", type=int, default=750, help="the height of the window")

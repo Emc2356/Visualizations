@@ -7,11 +7,19 @@ class ToothPick:
     def __init__(self, pos: pygame.math.Vector2, direction: int, length: float) -> None:
 
         if direction == 1:
-            self.pt1: pygame.math.Vector2 = pygame.math.Vector2(pos.x - length / 2, pos.y)
-            self.pt2: pygame.math.Vector2 = pygame.math.Vector2(pos.x + length / 2, pos.y)
+            self.pt1: pygame.math.Vector2 = pygame.math.Vector2(
+                pos.x - length / 2, pos.y
+            )
+            self.pt2: pygame.math.Vector2 = pygame.math.Vector2(
+                pos.x + length / 2, pos.y
+            )
         else:
-            self.pt1: pygame.math.Vector2 = pygame.math.Vector2(pos.x, pos.y - length / 2)
-            self.pt2: pygame.math.Vector2 = pygame.math.Vector2(pos.x, pos.y + length / 2)
+            self.pt1: pygame.math.Vector2 = pygame.math.Vector2(
+                pos.x, pos.y - length / 2
+            )
+            self.pt2: pygame.math.Vector2 = pygame.math.Vector2(
+                pos.x, pos.y + length / 2
+            )
 
         self.direction: int = direction
         self.length: float = length
@@ -24,19 +32,21 @@ class ToothPick:
     def intersects(self, pos: pygame.math.Vector2) -> bool:
         return pos == self.pt1 or pos == self.pt2
 
-    def create_picks(self, others) -> Tuple[Optional["ToothPick"], Optional["ToothPick"]]:
+    def create_picks(
+        self, others
+    ) -> Tuple[Optional["ToothPick"], Optional["ToothPick"]]:
         a, b = None, None
         for tp in others:
             if tp != self and tp.intersects(self.pt1):
                 break
         else:
-            a = ToothPick(self.pt1, self.direction*-1, self.length)
+            a = ToothPick(self.pt1, self.direction * -1, self.length)
 
         for tp in others:
             if tp != self and tp.intersects(self.pt2):
                 break
         else:
-            b = ToothPick(self.pt2, self.direction*-1, self.length)
+            b = ToothPick(self.pt2, self.direction * -1, self.length)
         return a, b
 
     def __bool__(self) -> bool:
@@ -55,7 +65,7 @@ class Visualization:
 
         self.length: int = 10
         self.toothpicks: List[ToothPick] = [
-            ToothPick(pygame.math.Vector2(self.W//2, self.H//2), 1, self.length)
+            ToothPick(pygame.math.Vector2(self.W // 2, self.H // 2), 1, self.length)
         ]
 
         pygame.display.set_caption("Toothpick Sequence")
@@ -79,7 +89,9 @@ class Visualization:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
 
@@ -98,5 +110,5 @@ def run() -> None:
     vis.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

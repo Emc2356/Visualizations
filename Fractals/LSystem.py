@@ -32,7 +32,8 @@ class System:
         self.setup()
 
     # if you want to do anything extra on startup you need to override setup
-    def setup(self) -> None: ...
+    def setup(self) -> None:
+        ...
 
     @classmethod
     def progress(cls) -> None:
@@ -54,7 +55,7 @@ class System:
             surface,
             (255, 255, 255),
             False,
-            [cls.commands[char](pos, velocity, cls.angle) for char in cls.axiom]
+            [cls.commands[char](pos, velocity, cls.angle) for char in cls.axiom],
         )
 
 
@@ -72,18 +73,21 @@ class Systems:
         axiom = "F"
         angle = 90
 
-        rules = {
-            "F": "F+G",
-            "G": "F-G",
-            "-": "-",
-            "+": "+"
-        }
+        rules = {"F": "F+G", "G": "F-G", "-": "-", "+": "+"}
 
         commands = {
-            "F": lambda pos, vel, angle: pygame.math.Vector2((pos.update(pos + vel), pos)[1]),
-            "G": lambda pos, vel, angle: pygame.math.Vector2((pos.update(pos + vel), pos)[1]),
-            "+": lambda pos, vel, angle: pygame.math.Vector2((pos, vel.rotate_ip(+angle))[0]),
-            "-": lambda pos, vel, angle: pygame.math.Vector2((pos, vel.rotate_ip(-angle))[0]),
+            "F": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos.update(pos + vel), pos)[1]
+            ),
+            "G": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos.update(pos + vel), pos)[1]
+            ),
+            "+": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos, vel.rotate_ip(+angle))[0]
+            ),
+            "-": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos, vel.rotate_ip(-angle))[0]
+            ),
         }
 
         pos = pygame.math.Vector2(W // 2, H // 2 - 100)
@@ -102,16 +106,18 @@ class Systems:
         axiom = "F"
         angle = 90
 
-        rules = {
-            "F": "F+F-F-F+F",
-            "-": "-",
-            "+": "+"
-        }
+        rules = {"F": "F+F-F-F+F", "-": "-", "+": "+"}
 
         commands = {
-            "F": lambda pos, vel, angle: pygame.math.Vector2((pos.update(pos + vel), pos)[1]),
-            "+": lambda pos, vel, angle: pygame.math.Vector2((pos, vel.rotate_ip(-angle))[0]),
-            "-": lambda pos, vel, angle: pygame.math.Vector2((pos, vel.rotate_ip(+angle))[0]),
+            "F": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos.update(pos + vel), pos)[1]
+            ),
+            "+": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos, vel.rotate_ip(-angle))[0]
+            ),
+            "-": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos, vel.rotate_ip(+angle))[0]
+            ),
         }
 
         pos = pygame.math.Vector2(0, H)
@@ -130,18 +136,21 @@ class Systems:
         axiom = "F-G-G"
         angle = 120
 
-        rules = {
-            "F": "F-G+F+G-F",
-            "G": "GG",
-            "-": "-",
-            "+": "+"
-        }
+        rules = {"F": "F-G+F+G-F", "G": "GG", "-": "-", "+": "+"}
 
         commands = {
-            "F": lambda pos, vel, angle: pygame.math.Vector2((pos.update(pos + vel), pos)[1]),
-            "G": lambda pos, vel, angle: pygame.math.Vector2((pos.update(pos + vel), pos)[1]),
-            "+": lambda pos, vel, angle: pygame.math.Vector2((pos, vel.rotate_ip(+angle))[0]),
-            "-": lambda pos, vel, angle: pygame.math.Vector2((pos, vel.rotate_ip(-angle))[0]),
+            "F": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos.update(pos + vel), pos)[1]
+            ),
+            "G": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos.update(pos + vel), pos)[1]
+            ),
+            "+": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos, vel.rotate_ip(+angle))[0]
+            ),
+            "-": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos, vel.rotate_ip(-angle))[0]
+            ),
         }
 
         pos = pygame.math.Vector2(0, H)
@@ -160,18 +169,21 @@ class Systems:
         axiom = "A"
         angle = 60
 
-        rules = {
-            "A": "B-A-B",
-            "B": "A+B+A",
-            "-": "-",
-            "+": "+"
-        }
+        rules = {"A": "B-A-B", "B": "A+B+A", "-": "-", "+": "+"}
 
         commands = {
-            "A": lambda pos, vel, angle: pygame.math.Vector2((pos.update(pos + vel), pos)[1]),
-            "B": lambda pos, vel, angle: pygame.math.Vector2((pos.update(pos + vel), pos)[1]),
-            "+": lambda pos, vel, angle: pygame.math.Vector2((pos, vel.rotate_ip(+angle))[0]),
-            "-": lambda pos, vel, angle: pygame.math.Vector2((pos, vel.rotate_ip(-angle))[0]),
+            "A": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos.update(pos + vel), pos)[1]
+            ),
+            "B": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos.update(pos + vel), pos)[1]
+            ),
+            "+": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos, vel.rotate_ip(+angle))[0]
+            ),
+            "-": lambda pos, vel, angle: pygame.math.Vector2(
+                (pos, vel.rotate_ip(-angle))[0]
+            ),
         }
 
         pos = pygame.math.Vector2(0, H)
@@ -231,10 +243,7 @@ class Systems:
                 elif char == "-":
                     vel.rotate_ip(-cls.angle)
                 elif char == "[":
-                    stack.append((
-                        pygame.math.Vector2(pos),
-                        pygame.math.Vector2(vel)
-                    ))
+                    stack.append((pygame.math.Vector2(pos), pygame.math.Vector2(vel)))
                 elif char == "]":
                     pos, vel = stack.pop()
                 else:
@@ -289,10 +298,7 @@ class Systems:
                 elif char == "-":
                     vel.rotate_ip(+cls.angle)
                 elif char == "[":
-                    stack.append((
-                        pygame.math.Vector2(pos),
-                        pygame.math.Vector2(vel)
-                    ))
+                    stack.append((pygame.math.Vector2(pos), pygame.math.Vector2(vel)))
                 elif char == "]":
                     pos, vel = stack.pop()
 
@@ -319,14 +325,18 @@ class Game:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     self.system.progress()
                     self.draw()
-                    pygame.display.set_caption(f"LSystem: {self.system.name}, order={self.system.order}")
+                    pygame.display.set_caption(
+                        f"LSystem: {self.system.name}, order={self.system.order}"
+                    )
 
     def draw(self) -> None:
         self.WIN.fill((30, 30, 30))
@@ -346,5 +356,5 @@ def run():
     game.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

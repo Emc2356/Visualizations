@@ -28,9 +28,11 @@ class Vector4:
     def fromMatrix(m: Union[List[List[float]]]) -> "Vector4":
         return Vector4(m[0][0], m[1][0], m[2][0], 0 if len(m) < 4 else m[3][0])
 
-    def __getitem__(self, index: int) -> float: return [self.x, self.y, self.z, self.w][index]
+    def __getitem__(self, index: int) -> float:
+        return [self.x, self.y, self.z, self.w][index]
 
-    def __len__(self) -> int: return 4
+    def __len__(self) -> int:
+        return 4
 
 
 def matmul(a, b):
@@ -46,18 +48,29 @@ def matmul(a, b):
         raise IndexError("Columns of A must match rows of B")
 
     return [
-        [
-            sum([a[j][n] * b[n][i] for n in range(colsA)]) for i in range(colsB)
-        ] for j in range(rowsA)
+        [sum([a[j][n] * b[n][i] for n in range(colsA)]) for i in range(colsB)]
+        for j in range(rowsA)
     ]
 
 
 def CreateHyperCubePoints() -> List[Vector4]:
     return [
-        Vector4(-1, -1, -1, 1), Vector4(1, -1, -1, 1), Vector4(1, 1, -1, 1), Vector4(-1, 1, -1, 1),
-        Vector4(-1, -1, 1, 1), Vector4(1, -1, 1, 1), Vector4(1, 1, 1, 1), Vector4(-1, 1, 1, 1),
-        Vector4(-1, -1, -1, -1), Vector4(1, -1, -1, -1), Vector4(1, 1, -1, -1), Vector4(-1, 1, -1, -1),
-        Vector4(-1, -1, 1, -1), Vector4(1, -1, 1, -1), Vector4(1, 1, 1, -1), Vector4(-1, 1, 1, -1)
+        Vector4(-1, -1, -1, 1),
+        Vector4(1, -1, -1, 1),
+        Vector4(1, 1, -1, 1),
+        Vector4(-1, 1, -1, 1),
+        Vector4(-1, -1, 1, 1),
+        Vector4(1, -1, 1, 1),
+        Vector4(1, 1, 1, 1),
+        Vector4(-1, 1, 1, 1),
+        Vector4(-1, -1, -1, -1),
+        Vector4(1, -1, -1, -1),
+        Vector4(1, 1, -1, -1),
+        Vector4(-1, 1, -1, -1),
+        Vector4(-1, -1, 1, -1),
+        Vector4(1, -1, 1, -1),
+        Vector4(1, 1, 1, -1),
+        Vector4(-1, 1, 1, -1),
     ]
 
 
@@ -66,7 +79,9 @@ class Game:
         self.W: int = 500
         self.H: int = 500
         WIN_FLAGS = pygame.OPENGL | pygame.DOUBLEBUF
-        self.WIN: pygame.surface.Surface = pygame.display.set_mode((self.W, self.H), WIN_FLAGS)
+        self.WIN: pygame.surface.Surface = pygame.display.set_mode(
+            (self.W, self.H), WIN_FLAGS
+        )
 
         self.running: bool = True
         self.clock: pygame.time.Clock = pygame.time.Clock()
@@ -89,7 +104,9 @@ class Game:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
 
@@ -99,20 +116,17 @@ class Game:
         GL.glVertex3d(a.x, a.y, a.z)
         GL.glVertex3d(b.x, b.y, b.z)
 
-    def calculate_rotations(self) -> Tuple[List[List[Union[int, float]]], List[List[Union[int, float]]]]:
+    def calculate_rotations(
+        self,
+    ) -> Tuple[List[List[Union[int, float]]], List[List[Union[int, float]]]]:
         self.time += self.timestep
         c, s = math.cos(self.time), math.sin(self.time)
-        return [
-                [c, -s, 0, 0],
-                [s,  c, 0, 0],
-                [0,  0, 1, 0],
-                [0,  0, 0, 1]
-            ], [
-                [1, 0, 0,  0],
-                [0, 1, 0,  0],
-                [0, 0, c, -s],
-                [0, 0, s,  c]
-            ]
+        return [[c, -s, 0, 0], [s, c, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [
+            [1, 0, 0, 0],
+            [0, 1, 0, 0],
+            [0, 0, c, -s],
+            [0, 0, s, c],
+        ]
 
     def draw(self) -> None:
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT)
@@ -170,5 +184,5 @@ def run():
     game.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

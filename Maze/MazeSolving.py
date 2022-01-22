@@ -22,8 +22,14 @@ red = (255, 0, 0)
 
 
 class Cell:
-
-    def __init__(self, WIN: pygame.surface.Surface, j: int, i: int, res: int, grid: List[List["Cell"]]):
+    def __init__(
+        self,
+        WIN: pygame.surface.Surface,
+        j: int,
+        i: int,
+        res: int,
+        grid: List[List["Cell"]],
+    ):
         self.WIN: pygame.surface.Surface = WIN
         self.j: int = j
         self.i: int = i
@@ -42,21 +48,24 @@ class Cell:
             "top": True,
             "right": True,
             "bottom": True,
-            "left": True
+            "left": True,
         }
 
         self.corner_cords = {
             "topleft": [self.x, self.y],
             "topright": [self.x + res, self.y],
             "bottomright": [self.x + res, self.y + res],
-            "bottomleft": [self.x, self.y + res]
+            "bottomleft": [self.x, self.y + res],
         }
 
         self.border_cords: Dict[str, list[List[int]]] = {
             "top": [self.corner_cords["topleft"], self.corner_cords["topright"]],
             "right": [self.corner_cords["topright"], self.corner_cords["bottomright"]],
-            "bottom": [self.corner_cords["bottomright"], self.corner_cords["bottomleft"]],
-            "left": [self.corner_cords["bottomleft"], self.corner_cords["topleft"]]
+            "bottom": [
+                self.corner_cords["bottomright"],
+                self.corner_cords["bottomleft"],
+            ],
+            "left": [self.corner_cords["bottomleft"], self.corner_cords["topleft"]],
         }
 
         self.neighbors: List[Cell] = []
@@ -90,13 +99,25 @@ class Cell:
         self.highlighted = True
 
     def draw_base(self) -> None:
-        pygame.draw.rect(self.WIN, dark_purple if not self.highlighted else green, [self.x, self.y, self.res, self.res])
+        pygame.draw.rect(
+            self.WIN,
+            dark_purple if not self.highlighted else green,
+            [self.x, self.y, self.res, self.res],
+        )
         for key, value in self.walls.items():
             if value:
                 pygame.draw.line(self.WIN, (0, 0, 0), *self.border_cords[key], 1)
 
     def draw(self) -> None:
-        color = green if self.highlighted else (purple if self.visited and not self.dead_end else (red if self.dead_end else dark_purple))
+        color = (
+            green
+            if self.highlighted
+            else (
+                purple
+                if self.visited and not self.dead_end
+                else (red if self.dead_end else dark_purple)
+            )
+        )
         pygame.draw.rect(self.WIN, color, [self.x, self.y, self.res, self.res])
         for key, value in self.walls.items():
             if value:
@@ -136,18 +157,27 @@ class Cell:
         return self.neighbors
 
     def get_available_neighbors(self) -> List["Cell"]:
-        neighbors = list(filter(lambda ne: not ne.visited and not ne.dead_end, self.get_neighbors()))
+        neighbors = list(
+            filter(lambda ne: not ne.visited and not ne.dead_end, self.get_neighbors())
+        )
         for i, neighbor in sorted(enumerate(neighbors), reverse=True):
             location = self.get_location(neighbor)
-            if location == "top" and neighbor.walls["bottom"]: neighbors.pop(i)
-            if location == "right" and neighbor.walls["left"]: neighbors.pop(i)
-            if location == "bottom" and neighbor.walls["top"]: neighbors.pop(i)
-            if location == "left" and neighbor.walls["right"]: neighbors.pop(i)
+            if location == "top" and neighbor.walls["bottom"]:
+                neighbors.pop(i)
+            if location == "right" and neighbor.walls["left"]:
+                neighbors.pop(i)
+            if location == "bottom" and neighbor.walls["top"]:
+                neighbors.pop(i)
+            if location == "left" and neighbor.walls["right"]:
+                neighbors.pop(i)
         return neighbors
 
     def random_neighbor(self) -> "Cell" or None:
-        neighbors = list(filter(lambda neighbor: not neighbor.visited, self.get_neighbors()))
-        if neighbors: return random.choice(neighbors)
+        neighbors = list(
+            filter(lambda neighbor: not neighbor.visited, self.get_neighbors())
+        )
+        if neighbors:
+            return random.choice(neighbors)
         return None
 
 
@@ -210,11 +240,14 @@ class Game:
         self.path = [self.current_cell]
         self.end_cell = self.grid[data["end"][0]][data["end"][1]]
         self.path_taken_to_draw: List[Cell] = [self.starting_cell]
-        if self.single_cell_update: self.draw()
+        if self.single_cell_update:
+            self.draw()
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 sys.exit()
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 self.reset()
@@ -231,7 +264,8 @@ class Game:
                     next_cell.highlight()
                     next_cell.visit()
                     self.path.append(next_cell)
-                    if self.single_cell_update: self.draw_cells([self.current_cell, next_cell])
+                    if self.single_cell_update:
+                        self.draw_cells([self.current_cell, next_cell])
                     self.current_cell = next_cell
                 else:
                     if self.path:
@@ -244,7 +278,8 @@ class Game:
                         if not next_cell.get_available_neighbors():
                             next_cell.silent_kill()
                             self.path.pop()
-                        if self.single_cell_update: self.draw_cells([self.current_cell, next_cell])
+                        if self.single_cell_update:
+                            self.draw_cells([self.current_cell, next_cell])
                         self.current_cell = next_cell
                 if self.current_cell == self.end_cell:
                     self.finished = True
@@ -253,7 +288,14 @@ class Game:
     def draw_cells(self, cells: List["Cell"]) -> None:
         for cell in cells:
             cell.draw()
-        pygame.display.update([min([cell.x for cell in cells]), min([cell.y for cell in cells]), self.res*4, self.res*4])
+        pygame.display.update(
+            [
+                min([cell.x for cell in cells]),
+                min([cell.y for cell in cells]),
+                self.res * 4,
+                self.res * 4,
+            ]
+        )
 
     def draw(self) -> None:
         self.WIN.fill((0, 0, 0))
@@ -274,9 +316,10 @@ class Game:
             self.clock.tick(self.FPS)
             self.event_handler()
             self.algorithm()
-            if not self.single_cell_update or self.finished: self.draw()
+            if not self.single_cell_update or self.finished:
+                self.draw()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     game = Game()
     game.run()

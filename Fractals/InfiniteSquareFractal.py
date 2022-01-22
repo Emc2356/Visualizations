@@ -28,7 +28,9 @@ class Visualization:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
@@ -48,10 +50,10 @@ class Visualization:
                 is_pink = not is_pink
             w /= 2
 
-            self.draw_square(x    , y    , w, (is_pink := not is_pink), count + 1)
-            self.draw_square(x + w, y    , w, (is_pink := not is_pink), count + 1)
+            self.draw_square(x, y, w, (is_pink := not is_pink), count + 1)
+            self.draw_square(x + w, y, w, (is_pink := not is_pink), count + 1)
             self.draw_square(x + w, y + w, w, (is_pink := not is_pink), count + 1)
-            self.draw_square(x    , y + w, w, (is_pink := not is_pink), count + 1)
+            self.draw_square(x, y + w, w, (is_pink := not is_pink), count + 1)
 
     def run(self) -> None:
         while self.running:
@@ -65,5 +67,5 @@ def run() -> None:
     vis.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

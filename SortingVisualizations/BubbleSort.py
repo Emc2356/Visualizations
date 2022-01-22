@@ -37,7 +37,7 @@ class Visualization:
                 self.swap(self.j, self.j + 1)
                 self.moved = self.j
             self.j += 1
-            if self.j >= len(self.array)-self.i-1:
+            if self.j >= len(self.array) - self.i - 1:
                 self.i += 1
                 self.j = 0
 
@@ -47,13 +47,21 @@ class Visualization:
     def draw(self) -> None:
         self.WIN.fill((0, 0, 0))
         for x, height in enumerate(self.array):
-            pygame.draw.line(self.WIN, (255, 255, 255) if x != self.moved + 1 else (255, 0, 0), (x, self.H), (x, self.H - (self.H - height)), 1)
+            pygame.draw.line(
+                self.WIN,
+                (255, 255, 255) if x != self.moved + 1 else (255, 0, 0),
+                (x, self.H),
+                (x, self.H - (self.H - height)),
+                1,
+            )
         pygame.display.update()
 
     def event_handler(self) -> None:
         mods = pygame.key.get_mods()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
@@ -74,5 +82,5 @@ def run() -> None:
     vis.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

@@ -29,7 +29,7 @@ class Visualization:
         self.WIN.fill((30, 30, 30))
 
         x = 350
-        y = self.H//2
+        y = self.H // 2
         for i in range(self.n):
             px, py = x, y
 
@@ -48,11 +48,15 @@ class Visualization:
         if len(self.wave) > 500:
             self.wave.pop()
 
-        pygame.draw.line(self.WIN, (255, 255, 255), (x, y), (self.W//2 + 150, self.wave[0]))
+        pygame.draw.line(
+            self.WIN, (255, 255, 255), (x, y), (self.W // 2 + 150, self.wave[0])
+        )
 
         for i, value in enumerate(self.wave[:-1]):
-            x = self.W//2 + 150 + i
-            pygame.draw.line(self.WIN, (255, 255, 255), (x, value), (x, self.wave[i+1]))
+            x = self.W // 2 + 150 + i
+            pygame.draw.line(
+                self.WIN, (255, 255, 255), (x, value), (x, self.wave[i + 1])
+            )
 
         pygame.display.update()
 
@@ -60,7 +64,9 @@ class Visualization:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
 
@@ -77,5 +83,5 @@ def run() -> None:
     vis.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()

@@ -9,7 +9,7 @@ class Visualization:
         pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN])
         self.W: int = 600
         self.H: int = 600
-        self.center: pygame.math.Vector2 = pygame.math.Vector2(self.W//2, self.H//4)
+        self.center: pygame.math.Vector2 = pygame.math.Vector2(self.W // 2, self.H // 4)
         self.WIN: pygame.surface.Surface = pygame.display.set_mode((self.W, self.H))
 
         self.running: bool = True
@@ -17,7 +17,9 @@ class Visualization:
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.FPS: int = 60
 
-        self.background: pygame.surface.Surface = pygame.surface.Surface(self.WIN.get_size())
+        self.background: pygame.surface.Surface = pygame.surface.Surface(
+            self.WIN.get_size()
+        )
         self.background.fill((255, 255, 255))
         self.px2: float = 0
         self.py2: float = 0
@@ -38,8 +40,18 @@ class Visualization:
         # first pendulum
         num1 = -self.g * (2 * self.m1 + self.m2) * math.sin(self.a1)
         num2 = self.m2 * self.g * math.sin(self.a1 - 2 * self.a2)
-        num3 = 2 * math.sin(self.a1 - self.a2) * self.m2 * ((self.a2_v * self.a2_v) * self.l2 + (self.a1_v * self.a1_v) * self.l1 * math.cos(self.a1 - self.a2))
-        den = self.l1 * (2 * self.m1 + self.m2 - self.m2 * math.cos(2 * self.a1 - 2 * self.a2))
+        num3 = (
+            2
+            * math.sin(self.a1 - self.a2)
+            * self.m2
+            * (
+                (self.a2_v * self.a2_v) * self.l2
+                + (self.a1_v * self.a1_v) * self.l1 * math.cos(self.a1 - self.a2)
+            )
+        )
+        den = self.l1 * (
+            2 * self.m1 + self.m2 - self.m2 * math.cos(2 * self.a1 - 2 * self.a2)
+        )
         self.a1_a = (num1 - num2 - num3) / den
 
         # second pendulum
@@ -47,7 +59,9 @@ class Visualization:
         num2 = (self.a1_v * self.a1_v) * self.l1 * (self.m1 + self.m2)
         num3 = self.g * (self.m1 + self.m2) * math.cos(self.a1)
         num4 = (self.a2_v * self.a2_v) * self.l2 * self.m2 * math.cos(self.a1 - self.a2)
-        den = self.l2 * (2 * self.m1 + self.m2 - self.m2 * math.cos(2 * self.a1 - 2 * self.a2))
+        den = self.l2 * (
+            2 * self.m1 + self.m2 - self.m2 * math.cos(2 * self.a1 - 2 * self.a2)
+        )
         self.a2_a = (num1 * (num2 + num3 + num4)) / den
 
         # change the angle variables
@@ -72,9 +86,11 @@ class Visualization:
 
         M: float = self.m1 + self.m2
         DTH: float = self.a1 - self.a2
-        KE: float = (((1/2) * M) * (self.l1 * self.l1) * (self.a1_v * self.a1_v)) + \
-                    (((1 / 2) * self.m2) * (self.l2 * self.l2) * (self.a2_v * self.a2_v)) + \
-                    (self.m2 * self.l1 * self.l2 * self.a1_v * self.a2_v * math.cos(DTH))
+        KE: float = (
+            (((1 / 2) * M) * (self.l1 * self.l1) * (self.a1_v * self.a1_v))
+            + (((1 / 2) * self.m2) * (self.l2 * self.l2) * (self.a2_v * self.a2_v))
+            + (self.m2 * self.l1 * self.l2 * self.a1_v * self.a2_v * math.cos(DTH))
+        )
         PE: float = (self.m1 * self.g * y1) + (self.m2 * self.g * y2)
 
         pygame.draw.line(self.WIN, (0, 0, 0), self.center, (x1, y1), 1)
@@ -83,14 +99,20 @@ class Visualization:
         pygame.draw.line(self.WIN, (0, 0, 0), (x1, y1), (x2, y2), 1)
         pygame.draw.circle(self.WIN, (0, 0, 0), (x2, y2), self.m2)
 
-        if self.draw_lines: pygame.draw.line(self.background, (0, 0, 0), (self.px2, self.py2), (x2, y2), 1)
-        else: self.draw_lines = True
+        if self.draw_lines:
+            pygame.draw.line(
+                self.background, (0, 0, 0), (self.px2, self.py2), (x2, y2), 1
+            )
+        else:
+            self.draw_lines = True
         self.px2, self.py2 = x2, y2
         pygame.display.update()
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
 
@@ -107,5 +129,5 @@ def run() -> None:
     vis.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     run()
