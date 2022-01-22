@@ -11,9 +11,10 @@
 > [Lorenz System](./Fractals/LorenzSystem.py)  
 > [Mandelbrot set](./Fractals/MandelbrotSet.py)  
 > [Angle drawing](./Fractals/AngleDrawing.py)  
+> [L-System](./Fractals/LSystem.py)
 
 # Mazes
-> more info can be found [gere](./Maze/README.md)  
+> more info can be found [here](./Maze/README.md)  
 
 # Other
 > [Ray Casting](./other/RayCasting.py)  
