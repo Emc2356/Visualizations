@@ -29,3 +29,4 @@
 > [double pendulum](./other/DoublePendulum.py)  
 > [prime visualizer as polar coordinates](./other/PrimeVisualizerAsPolar.py)  
 > [metaballs](./other/MetaBalls.py)  
+> [BobbingCirclePoints](./other/BobbingCirclePoints.py)  
