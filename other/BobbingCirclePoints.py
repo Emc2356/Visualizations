@@ -42,7 +42,9 @@ class Game:
 
     def event_handler(self) -> None:
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
@@ -67,10 +69,7 @@ class Game:
                 pygame.draw.line(self.WIN, (255, 255, 255), pos0, pos1, 1)
 
             if DRAW_POINTS:
-                point_pos = pos0.lerp(
-                        pos1,
-                        (math.sin(offset) + 1) / 2
-                    )
+                point_pos = pos0.lerp(pos1, (math.sin(offset) + 1) / 2)
 
                 pygame.draw.circle(self.WIN, (255, 255, 255), point_pos, 3)
 
