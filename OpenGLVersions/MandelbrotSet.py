@@ -15,7 +15,7 @@ def read_file(path: str) -> str:
         return f.read()
 
 
-shader_dir: str = os.path.join(".", "data", "shader")
+shader_dir: str = os.path.join(".", "data", "shaders")
 W: int = 1000
 H: int = int(W / 1.5)
 SCREEN_SIZE: tuple[int, int] = W, H

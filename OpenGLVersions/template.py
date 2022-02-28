@@ -15,7 +15,7 @@ def read_file(path: str) -> str:
         return f.read()
 
 
-shader_dir: str = os.path.join(".", "data", "shader")
+shader_dir: str = os.path.join(".", "data", "shaders")
 aspect_ratio: float = 16 / 9
 W: int = 1000
 H: int = int(W / aspect_ratio)
