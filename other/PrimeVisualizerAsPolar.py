@@ -5,7 +5,7 @@ import pygame
 
 USE_PRIMES: bool = True
 
-N: int = 500_00  # the number of primes that we will use
+N: int = 100 * 3  # the number of primes that we will use
 POINT_SIZE: float = 0.05
 
 
@@ -36,9 +36,10 @@ class Game:
         self.x: np.ndarray = self.numbers * np.cos(self.numbers)
         self.y: np.ndarray = self.numbers * np.sin(self.numbers)
 
-        self.vertex_data = np.zeros(N * 2, dtype=float)
-        self.vertex_data[0 : N * 2 : 2] = self.x
-        self.vertex_data[1 : N * 2 : 2] = self.y
+        self.vertex_data = np.zeros(N * 3, dtype=float)
+        self.vertex_data[0:N*3:3] = self.x
+        self.vertex_data[1:N*3:3] = self.y
+        self.vertex_data[1:N*3:3] = -1
 
         # rgb value: (170, 255, 170)
         # hex value: 0xAAFFAA
@@ -48,8 +49,9 @@ class Game:
         self.color_data[2::3] = 170 / 255  # Blue
 
         self.index_data = np.arange(0, N, dtype=int)
-        self.index_data[0::2] = np.arange(0, N, 2, dtype=int)
-        self.index_data[1::2] = np.arange(0, N, 2, dtype=int)
+        self.index_data[0::3] = np.arange(0, N, 3, dtype=int)
+        self.index_data[1::3] = np.arange(0, N, 3, dtype=int)
+        self.index_data[2::3] = np.arange(0, N, 3, dtype=int)
 
         pygame.display.set_caption("Prime Number Visualizer as polar coordinates")
         view = int(self.numbers[~0])

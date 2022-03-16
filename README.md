@@ -8,7 +8,7 @@
 > [Hilbert Curve](./Fractals/HilbertCurve.py)  
 > [Toothpick Sequence](./Fractals/ToothpickSequence.py)  
 > [Infinite Square Fractal](./Fractals/InfiniteSquareFractal.py)  
-> [Lorenz System](./Fractals/LorenzSystem.py)  
+> [Lorenz Attractor](./Fractals/LorenzAttractor.py)  
 > [Mandelbrot set](./Fractals/MandelbrotSet.py)  
 > [Angle drawing](./Fractals/AngleDrawing.py)  
 > [L-System](./Fractals/LSystem.py)

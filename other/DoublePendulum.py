@@ -20,6 +20,7 @@ class Visualization:
         self.background: pygame.surface.Surface = pygame.surface.Surface(
             self.WIN.get_size()
         )
+
         self.background.fill((255, 255, 255))
         self.px2: float = 0
         self.py2: float = 0
@@ -71,11 +72,11 @@ class Visualization:
         self.a2 += self.a2_v
 
     def get_pos(self) -> list[tuple[float, float]]:
-        x1 = self.l1 * math.sin(self.a1) + self.center.x
-        y1 = self.l1 * math.cos(self.a1) + self.center.y
+        x1 = self.l1 * math.cos(self.a1 + math.pi / 2) + self.center.x
+        y1 = self.l1 * math.sin(self.a1 + math.pi / 2) + self.center.y
 
-        x2 = x1 + self.l2 * math.sin(self.a2)
-        y2 = y1 + self.l2 * math.cos(self.a2)
+        x2 = x1 + self.l2 * math.cos(self.a2 + math.pi / 2)
+        y2 = y1 + self.l2 * math.sin(self.a2 + math.pi / 2)
         return [(x1, y1), (x2, y2)]
 
     def draw(self) -> None:
@@ -83,15 +84,6 @@ class Visualization:
 
         self.calc_acceleration()
         [x1, y1], [x2, y2] = self.get_pos()
-
-        M: float = self.m1 + self.m2
-        DTH: float = self.a1 - self.a2
-        KE: float = (
-            (((1 / 2) * M) * (self.l1 * self.l1) * (self.a1_v * self.a1_v))
-            + (((1 / 2) * self.m2) * (self.l2 * self.l2) * (self.a2_v * self.a2_v))
-            + (self.m2 * self.l1 * self.l2 * self.a1_v * self.a2_v * math.cos(DTH))
-        )
-        PE: float = (self.m1 * self.g * y1) + (self.m2 * self.g * y2)
 
         pygame.draw.line(self.WIN, (0, 0, 0), self.center, (x1, y1), 1)
         pygame.draw.circle(self.WIN, (0, 0, 0), (x1, y1), self.m1)

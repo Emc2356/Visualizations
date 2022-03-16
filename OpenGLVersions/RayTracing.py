@@ -5,8 +5,6 @@ import moderngl_window as mglw
 import numpy as np
 import glm
 
-import random
-import struct
 import pygame
 import sys
 import os
@@ -25,7 +23,7 @@ SCREEN_SIZE: tuple[int, int] = W, H
 SAMPLES: int = 32
 
 
-class MandelbrotSet(mglw.WindowConfig):
+class RayTracing(mglw.WindowConfig):
     gl_version = 4, 4
     aspect_ratio = aspect_ratio
     window_size = SCREEN_SIZE
@@ -37,7 +35,7 @@ class MandelbrotSet(mglw.WindowConfig):
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.FPS: int = 60
 
-        self.hittable_object_count: int = 2
+        self.sphere_count: int = 3
 
         self.initialize_program()
 
@@ -48,9 +46,7 @@ class MandelbrotSet(mglw.WindowConfig):
             ),
             fragment_shader=read_file(
                 os.path.join(shader_dir, "RayTracing.frag")
-            ).replace(
-                "1  // %HittableObjectCount%", str(self.hittable_object_count)
-            ),
+            )
         )
 
         arr = np.array([
@@ -68,25 +64,22 @@ class MandelbrotSet(mglw.WindowConfig):
         self.vbo = self.ctx.buffer(arr)
         self.vao = self.ctx.simple_vertex_array(self.program, self.vbo, "in_vert")
 
-        self.sphere_buffer = self.ctx.buffer(
-            np.fromiter(self.gen_initial_data(), dtype="f4")
-        )
+        buffer_data = np.fromiter(self.gen_initial_data(), dtype="f4")
+        self.sphere_buffer = self.ctx.buffer(buffer_data)
 
-        self.spheres = self.ctx.vertex_array(
-            self.program, [(self.sphere_buffer, "4f", "in_vert")],
-        )
+        vfov = 100
 
-        viewport_height = 2.0
+        theta = glm.radians(vfov)
+        h = glm.tan(theta / 2)
+        print(h)
+        viewport_height = 2.0 * h
         viewport_width = aspect_ratio * viewport_height
         focal_length = 1.0
         origin = glm.vec3(0, 0, 0)
-        horizontal = glm.vec3(viewport_width, 0, 0)
-        vertical = glm.vec3(0, viewport_height, 0)
-        lower_left_corner = origin - horizontal/2 - vertical/2 - glm.vec3(0, 0, focal_length)
+        horizontal = glm.vec3(viewport_width, 0.0, 0.0)
+        vertical = glm.vec3(0.0, viewport_height, 0.0)
+        lower_left_corner = origin - horizontal / 2 - vertical / 2 - glm.vec3(0, 0, focal_length)
 
-        self.program["viewport_height"] = viewport_height
-        self.program["viewport_width"] = viewport_width
-        self.program["focal_length"] = focal_length
         self.program["origin"] = tuple(origin)
         self.program["horizontal"] = tuple(horizontal)
         self.program["vertical"] = tuple(vertical)
@@ -98,29 +91,29 @@ class MandelbrotSet(mglw.WindowConfig):
         self.program["height"] = H
         self.program["samples"] = SAMPLES
 
-        print(f"number of elements: {(W * H * SAMPLES) / 100}")
+        self.program["SphereCount"] = self.sphere_count
 
         self.sphere_buffer.bind_to_storage_buffer(0)
 
     def gen_initial_data(self):
         """Generator function creating the initial buffer data"""
-        yield 0
-        yield -100.5
-        yield -1
-        yield 100
-        yield +0.0
-        yield +0.0
-        yield -1.0
-        yield +0.5
-        # for i in range(self.hittable_object_count):
-        #     # x
-        #     yield 1.0
-        #     # y
-        #     yield 1.0
-        #     # z
-        #     yield 1.0
-        #     # radius
-        #     yield 1.0
+        yield from [
+            +1.0, +0.0, -1.0, +0.4,  # x, y, z, radius
+            +1.0, +0.0, +0.0, +1.0,  # r, g, b, a
+            +0.4, +0.0, +0.0, +0.0,  # reflectivity, emission
+        ]
+
+        yield from [
+            +0.0, +0.0, -1.0, +0.4,  # x, y, z, radius
+            +0.0, +1.0, +0.0, +1.0,  # r, g, b, a
+            +0.4, +0.0, +0.0, +0.0,  # reflectivity, emission
+        ]
+
+        yield from [
+            -1.0, +0.0, -1.0, +0.4,  # x, y, z, radius
+            +0.0, +0.0, +1.0, +1.0,  # r, g, b, a
+            +0.4, +0.0, +0.0, +0.0,  # reflectivity, emission
+        ]
 
     @classmethod
     def run(cls):
@@ -147,4 +140,4 @@ if __name__ == "__main__":
     if "--window" not in sys.argv:
         sys.argv.append("--window")
         sys.argv.append("pygame2")
-    MandelbrotSet.run()
+    RayTracing.run()

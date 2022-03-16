@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import moderngl as mgl
 import moderngl_window as mglw
+
 import glm
 import numpy as np
 
