@@ -5,8 +5,9 @@ import colorsys
 import pygame
 
 
+# process
 @nb.njit
-def progress(
+def process_single_attractor(
         X: np.ndarray,
         Y: np.ndarray,
         Z: np.ndarray,
@@ -15,7 +16,7 @@ def progress(
         current: int,
         scale: float,
         steps: int,
-):
+) -> None:
     sigma = 10
     beta = 8 / 3
     ro = 28
@@ -39,7 +40,32 @@ def progress(
         Z[current:current + 1] = (z + (dz * dt)) / scale
 
 
-class Game:
+@nb.njit(parallel=True)
+def process_multiple_attractors(
+    XX: np.ndarray,
+    YY: np.ndarray,
+    ZZ: np.ndarray,
+    count: int,
+    dt: float,
+    total: int,
+    current: int,
+    scale: float,
+    steps: int,
+) -> None:
+    for i in nb.prange(count):
+        process_single_attractor(
+            XX[i],
+            YY[i],
+            ZZ[i],
+            dt,
+            total,
+            current,
+            scale,
+            steps,
+        )
+
+
+class SingleAttractor:
     def __init__(self):
         self.W: int = 750
         self.H: int = 750
@@ -94,7 +120,7 @@ class Game:
                     self.current = 0
 
     def draw(self) -> None:
-        progress(self.X, self.Y, self.Z, self.dt, self.N, self.current, self.scale, self.steps)
+        process_single_attractor(self.X, self.Y, self.Z, self.dt, self.N, self.current, self.scale, self.steps)
         self.current = min(self.current + self.steps, self.N)
 
         self.vertex_data[0:self.N*3:3] = self.X
@@ -126,9 +152,117 @@ class Game:
             self.draw()
 
 
+class MultiAttractors:
+    def __init__(self):
+        self.W: int = 750
+        self.H: int = 750
+
+        self.WIN: pygame.surface.Surface = pygame.display.set_mode(
+            (self.W, self.H), pygame.DOUBLEBUF | pygame.OPENGL
+        )
+
+        self.running: bool = True
+        self.clock: pygame.time.Clock = pygame.time.Clock()
+        self.FPS: int = 60
+
+        # how many "heads" we will have
+        self.ATTRACTOR_COUNT: int = 2
+
+        self.N: int = 50_000 * 3
+        assert self.N % 3 == 0.0, "expected `N` to be divisible by 3"
+        self.steps: int = 100
+        self.current: int = 0
+        self.scale: float = 60
+
+        self.attractors: np.recarray = np.recarray(
+            (self.ATTRACTOR_COUNT,),
+            [
+                ("X", (np.float64, (self.N,))),
+                ("Y", (np.float64, (self.N,))),
+                ("Z", (np.float64, (self.N,))),
+                ("vertex_data", (np.float64, (self.N * 3,))),
+                ("color", (np.float64, (3,))),
+            ]
+        )
+
+        self.attractors.X[:, 0] = np.linspace(0.0001, 0.001, self.ATTRACTOR_COUNT, dtype=np.float64)
+
+        self.dt: float = 0.001
+
+        for i in range(self.ATTRACTOR_COUNT):
+            red, green, blue = colorsys.hsv_to_rgb(i / self.ATTRACTOR_COUNT, 1, 1)
+            self.attractors[i].color[0] = red
+            self.attractors[i].color[1] = green
+            self.attractors[i].color[2] = blue
+
+        self.index_data = np.arange(0, self.N, dtype=np.int64)
+        self.index_data[0::3] = np.arange(0, self.N, 3, dtype=np.int64)
+        self.index_data[1::3] = np.arange(0, self.N, 3, dtype=np.int64)
+        self.index_data[2::3] = np.arange(0, self.N, 3, dtype=np.int64)
+
+        pygame.display.set_caption("Lorenz Attractor")
+
+    def event_handler(self) -> None:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or (
+                event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE
+            ):
+                pygame.quit()
+                raise SystemExit
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    self.current = 0
+
+    def draw(self) -> None:
+        process_multiple_attractors(
+            self.attractors.X,
+            self.attractors.Y,
+            self.attractors.Z,
+            self.ATTRACTOR_COUNT,
+            self.dt,
+            self.N,
+            self.current,
+            self.scale,
+            self.steps
+        )
+        self.current = min(self.current + self.steps, self.N)
+
+        self.attractors.vertex_data[:, 0:self.N*3:3] = self.attractors.X[:]
+        self.attractors.vertex_data[:, 1:self.N*3:3] = self.attractors.Y[:]
+        self.attractors.vertex_data[:, 2:self.N*3:3] = self.attractors.Z[:]
+
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT)
+
+        GL.glRotatef(1, 1, 1, 1)
+
+        for i in range(self.ATTRACTOR_COUNT):
+            GL.glColor3f(
+                self.attractors[i].color[0],
+                self.attractors[i].color[1],
+                self.attractors[i].color[2],
+            )
+
+            GL.glEnableClientState(GL.GL_VERTEX_ARRAY)
+
+            GL.glVertexPointer(3, GL.GL_FLOAT, 0, self.attractors[i].vertex_data)
+            GL.glDrawElements(
+                GL.GL_LINE_STRIP, self.current, GL.GL_UNSIGNED_INT, self.index_data
+            )
+
+            GL.glDisableClientState(GL.GL_VERTEX_ARRAY)
+
+        pygame.display.flip()
+
+    def run(self) -> None:
+        while self.running:
+            self.clock.tick(self.FPS)
+            self.event_handler()
+            self.draw()
+
+
 def run():
-    game = Game()
-    game.run()
+    lorenz_system = MultiAttractors()
+    lorenz_system.run()
 
 
 if __name__ == "__main__":
