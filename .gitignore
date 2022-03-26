@@ -1,0 +1,4 @@
+OpenGLLib/base.pxd/unhandled_glew.h
+*.pyd
+**/__pycache__
+*.pyc

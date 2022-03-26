@@ -5,6 +5,11 @@ import colorsys
 import pygame
 
 
+sigma = 10
+beta = 8 / 3
+ro = 28
+
+
 # process
 @nb.njit
 def process_single_attractor(
@@ -17,10 +22,6 @@ def process_single_attractor(
         scale: float,
         steps: int,
 ) -> None:
-    sigma = 10
-    beta = 8 / 3
-    ro = 28
-
     for _ in range(steps):
         if current == total:
             return
@@ -78,7 +79,7 @@ class SingleAttractor:
         self.clock: pygame.time.Clock = pygame.time.Clock()
         self.FPS: int = 60
 
-        self.N: int = 100_000 * 3
+        self.N: int = 200_000 * 3
         assert self.N % 3 == 0.0, "expected `N` to be divisible by 3"
         self.steps: int = 1000
         self.current: int = 0
@@ -96,7 +97,7 @@ class SingleAttractor:
 
         self.color_data = np.ones(self.N * 3, dtype=np.float64)
         for i in range(self.N):
-            red, green, blue = colorsys.hsv_to_rgb(i / 255, 1, 1)
+            red, green, blue = colorsys.hsv_to_rgb(i / 1000, 1, 1)
             self.color_data[i * 3 + 0] = red
             self.color_data[i * 3 + 1] = green
             self.color_data[i * 3 + 2] = blue
@@ -123,9 +124,10 @@ class SingleAttractor:
         process_single_attractor(self.X, self.Y, self.Z, self.dt, self.N, self.current, self.scale, self.steps)
         self.current = min(self.current + self.steps, self.N)
 
-        self.vertex_data[0:self.N*3:3] = self.X
-        self.vertex_data[1:self.N*3:3] = self.Y
-        self.vertex_data[2:self.N*3:3] = self.Z
+        if self.current <= self.N:
+            self.vertex_data[0:self.current*3:3] = self.X[:self.current]
+            self.vertex_data[1:self.current*3:3] = self.Y[:self.current]
+            self.vertex_data[2:self.current*3:3] = self.Z[:self.current]
 
         GL.glClear(GL.GL_COLOR_BUFFER_BIT)
 
@@ -261,7 +263,7 @@ class MultiAttractors:
 
 
 def run():
-    lorenz_system = MultiAttractors()
+    lorenz_system = SingleAttractor()
     lorenz_system.run()
 
 
